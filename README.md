@@ -10,6 +10,8 @@ Ce qu'il faut pour brancher une app sur [DrakBase](https://updates.drakbase.com)
 | l'agent `drakbase-stack`, qui installe et met à jour les stacks Docker sur une machine Linux | `crates/am-agent` |
 | le protocole partagé, ses jeux d'essai et les contrats avec le serveur | `crates/am-protocol`, `fixtures`, `docs` |
 
+**Le guide des développeurs : [drakbase.github.io/client](https://drakbase.github.io/client/)**, du premier branchement à la première mise à jour reçue.
+
 Chaque version est signée sur le Mac du développeur, avec une clé propre à l'app. L'app vérifie elle-même la signature, la version signée et son identifiant : un serveur compromis ne pourrait que retenir des mises à jour, jamais en livrer une fausse.
 
 ## Installer
