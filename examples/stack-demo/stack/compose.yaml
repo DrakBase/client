@@ -1,0 +1,20 @@
+# Stack de démonstration : un service surveillé, ses données dans un volume nommé, un fichier de
+# configuration monté en lecture seule, et une sauvegarde lancée avant chaque mise à jour.
+services:
+  demo:
+    build: ../app
+    image: demo
+    restart: unless-stopped
+    environment:
+      MESSAGE: ${MESSAGE:-Bonjour}
+    volumes:
+      - data:/data
+      - ./files/message.txt:/etc/demo/message.txt:ro
+  backup:
+    image: demo
+    profiles: [drakbase-hooks]
+    command: ["sh", "-c", "cp /data/last-start.txt /data/last-start.bak 2>/dev/null; echo sauvegarde faite"]
+    volumes:
+      - data:/data
+volumes:
+  data:

@@ -1,0 +1,86 @@
+{
+  "name": "demo",
+  "networks": {
+    "default": {
+      "name": "demo_default",
+      "ipam": {}
+    }
+  },
+  "services": {
+    "app": {
+      "command": null,
+      "depends_on": {
+        "db": {
+          "condition": "service_started",
+          "restart": true,
+          "required": true
+        }
+      },
+      "entrypoint": null,
+      "gpus": [
+        {
+          "count": -1
+        }
+      ],
+      "image": "maj.example.fr/demo/app@sha256:d812a9365b5761555d8517333f84fe8606f1f4ac82d37ac17476c55b902df23a",
+      "ipc": "service:db",
+      "networks": {
+        "default": null
+      },
+      "pid": "container:traefik",
+      "runtime": "nvidia",
+      "volumes": [
+        {
+          "type": "volume",
+          "source": "journal",
+          "target": "/journal",
+          "volume": {}
+        }
+      ],
+      "volumes_from": [
+        "db:ro",
+        "container:portainer:ro"
+      ],
+      "post_start": [
+        {
+          "command": [
+            "true"
+          ],
+          "privileged": true
+        }
+      ]
+    },
+    "db": {
+      "command": null,
+      "deploy": {
+        "resources": {
+          "reservations": {
+            "devices": [
+              {
+                "capabilities": [
+                  "gpu"
+                ],
+                "driver": "cdi",
+                "device_ids": [
+                  "fr.example/carte=0"
+                ]
+              }
+            ]
+          }
+        },
+        "placement": {}
+      },
+      "entrypoint": null,
+      "image": "postgres:17@sha256:4444444444444444444444444444444444444444444444444444444444444444",
+      "ipc": "shareable",
+      "networks": {
+        "default": null
+      }
+    }
+  },
+  "volumes": {
+    "journal": {
+      "name": "journal-commun"
+    }
+  }
+}

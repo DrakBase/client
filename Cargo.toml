@@ -1,0 +1,78 @@
+[workspace]
+resolver = "3"
+members = ["crates/am-protocol", "crates/am-cli", "crates/am-agent"]
+
+[workspace.package]
+version = "0.6.0"
+edition = "2024"
+rust-version = "1.99"
+publish = false
+
+# Les dépendances du projet sont déclarées ici, avec leur version : chaque crate n'active que ce
+# qu'elle utilise. Seule exception, notée sur place : core-foundation, dans am-cli.
+[workspace.dependencies]
+am-protocol = { path = "crates/am-protocol" }
+
+anyhow = "1.0.104"
+argon2 = "0.6.0"
+axum = "0.8.9"
+base64 = "0.23.1"
+blake2 = "0.11.0"
+bytes = "1.12.1"
+clap = { version = "4.6.7", features = ["derive"] }
+flate2 = "1.1.10"
+futures-util = "0.3.34"
+goblin = "0.10.7"
+governor = "0.10.4"
+hex = "0.4.3"
+http-body-util = "0.1.5"
+indexmap = { version = "2.14.2", features = ["serde"] }
+libc = "0.2.191"
+minisign = "0.10.0"
+minisign-verify = "0.3.0"
+percent-encoding = "2.3.2"
+plist = "1.10.3"
+# Le rendu SVG seul : les options par défaut tireraient la crate `image`, inutile ici.
+qrcode = { version = "0.14.1", default-features = false, features = ["svg"] }
+reqwest = { version = "0.13.5", default-features = false }
+ring = "0.17.14"
+rpassword = "7.5.4"
+rusqlite = { version = "0.41.0", features = ["bundled"] }
+rust-embed = "8.13.0"
+# Fournisseur cryptographique ring pour rustls, à la place d'aws-lc-rs que reqwest prend par défaut :
+# il se compile en statique pour Linux musl avec cargo-zigbuild.
+rustls = { version = "0.23", default-features = false, features = ["ring", "std", "tls12"] }
+security-framework = "3.7.0"
+semver = "1.0.28"
+serde = { version = "1.0.229", features = ["derive"] }
+serde_json = "1.0.154"
+sha2 = "0.11.1"
+tar = "0.4.46"
+tempfile = "3.27.0"
+thiserror = "2.0.21"
+time = { version = "0.3.55", features = ["formatting", "parsing", "macros"] }
+tokio = { version = "1.54.1", features = ["full"] }
+tokio-util = "0.7.20"
+totp-rs = "6.0.0"
+tower = "0.5.3"
+tower-http = "0.7.1"
+tracing = "0.1.44"
+tracing-subscriber = { version = "0.3.23", features = ["env-filter"] }
+ulid = "3.0.0"
+zstd = "0.13"
+
+[workspace.lints.rust]
+unsafe_code = "deny"
+
+[workspace.lints.clippy]
+all = { level = "warn", priority = -1 }
+
+[profile.release]
+lto = "thin"
+codegen-units = 1
+strip = true
+
+# Les clés d'essai sont chiffrées avec scrypt : sans optimisation, chaque déchiffrement prend
+# environ 2 s dans les tests.
+[profile.dev.package.scrypt]
+opt-level = 3

@@ -1,0 +1,189 @@
+{
+  "cases": [
+    {
+      "announced_version": "1.2.0",
+      "expected": "ok",
+      "file": "files/payload.bin",
+      "key": "keys/test-app.pub",
+      "name": "valide",
+      "signature": "files/payload.bin.sig"
+    },
+    {
+      "announced_version": "1.3.0",
+      "expected": "version_mismatch",
+      "file": "files/payload.bin",
+      "key": "keys/test-app.pub",
+      "name": "version annoncée différente",
+      "signature": "files/payload.bin.sig"
+    },
+    {
+      "announced_version": "1.2.0",
+      "expected": "key_id_mismatch",
+      "file": "files/payload.bin",
+      "key": "keys/test-app.pub",
+      "name": "signée par une autre clé",
+      "signature": "files/payload.bin.other-key.sig"
+    },
+    {
+      "announced_version": "1.2.0",
+      "expected": "invalid",
+      "file": "files/payload-tampered.bin",
+      "key": "keys/test-app.pub",
+      "name": "fichier modifié",
+      "signature": "files/payload.bin.sig"
+    },
+    {
+      "announced_version": "9.9.9",
+      "expected": "invalid",
+      "file": "files/payload.bin",
+      "key": "keys/test-app.pub",
+      "name": "commentaire de confiance modifié",
+      "signature": "files/payload.bin.tampered-comment.sig"
+    },
+    {
+      "announced_version": "1.2.0",
+      "expected": "missing_version",
+      "file": "files/payload.bin",
+      "key": "keys/test-app.pub",
+      "name": "sans version signée",
+      "signature": "files/payload.bin.no-version.sig"
+    },
+    {
+      "announced_version": "1.2.0",
+      "expected": "legacy",
+      "file": "files/payload.bin",
+      "key": "keys/test-app.pub",
+      "name": "format historique",
+      "signature": "files/payload.bin.legacy-alg.sig"
+    },
+    {
+      "announced_version": "1.2.0",
+      "expected": "ok",
+      "file": "files/payload.bin",
+      "key": "keys/test-app-crlf.pub",
+      "name": "fins de ligne Windows",
+      "signature": "files/payload.bin.crlf.sig"
+    },
+    {
+      "announced_version": "1.2.0",
+      "expected": "ok",
+      "file": "files/payload.bin",
+      "key": "tauri/tauri-generated.pub",
+      "name": "signée par Tauri",
+      "signature": "tauri/payload.bin.tauri.sig"
+    },
+    {
+      "announced_version": "1.2.0",
+      "expected": "missing_version",
+      "file": "files/payload.bin",
+      "key": "tauri/tauri-generated.pub",
+      "name": "signée par Tauri sans --app-version",
+      "signature": "tauri/payload.bin.tauri-no-version.sig"
+    },
+    {
+      "announced_version": "1.2.0",
+      "expected": "ok",
+      "file": "files/payload.bin",
+      "key": "tauri/appsmarket-generated.pub",
+      "name": "clé d'appsmarket, signée par Tauri",
+      "signature": "tauri/payload.bin.tauri-with-appsmarket-key.sig"
+    },
+    {
+      "announced_version": "1.2.0",
+      "expected": "key_id_mismatch",
+      "file": "files/payload.bin",
+      "key": "keys/test-app.pub",
+      "name": "signature de Tauri, autre clé",
+      "signature": "tauri/payload.bin.tauri.sig"
+    }
+  ],
+  "expected_codes": [
+    "ok",
+    "legacy",
+    "key_id_mismatch",
+    "invalid",
+    "missing_version",
+    "version_mismatch"
+  ],
+  "parsing": [
+    {
+      "expected": "ok",
+      "file": "keys/test-app.pub",
+      "key_id": "7187B435F3714F09",
+      "kind": "public_key",
+      "name": "clé valide"
+    },
+    {
+      "expected": "ok",
+      "file": "keys/other-app.pub",
+      "key_id": "7118B0030CA5E42E",
+      "kind": "public_key",
+      "name": "autre clé valide"
+    },
+    {
+      "expected": "ok",
+      "file": "keys/test-app-crlf.pub",
+      "key_id": "7187B435F3714F09",
+      "kind": "public_key",
+      "name": "clé en fins de ligne Windows"
+    },
+    {
+      "expected": "malformed",
+      "file": "keys/malformed-empty-first-line.pub",
+      "kind": "public_key",
+      "name": "clé décalée par une ligne vide"
+    },
+    {
+      "expected": "malformed",
+      "file": "keys/malformed-no-comment.pub",
+      "kind": "public_key",
+      "name": "clé sans commentaire non signé"
+    },
+    {
+      "expected": "ok",
+      "file": "tauri/tauri-generated.pub",
+      "key_id": "476B683C28E52F12",
+      "kind": "public_key",
+      "name": "clé produite par Tauri"
+    },
+    {
+      "expected": "ok",
+      "file": "tauri/appsmarket-generated.pub",
+      "key_id": "09CF7BF1480F7338",
+      "kind": "public_key",
+      "name": "clé produite par appsmarket keygen"
+    },
+    {
+      "expected": "ok",
+      "file": "files/payload.bin.sig",
+      "key_id": "7187B435F3714F09",
+      "kind": "signature",
+      "name": "signature valide"
+    },
+    {
+      "expected": "ok",
+      "file": "files/payload.bin.crlf.sig",
+      "key_id": "7187B435F3714F09",
+      "kind": "signature",
+      "name": "signature en fins de ligne Windows"
+    },
+    {
+      "expected": "malformed",
+      "file": "files/payload.bin.empty-first-line.sig",
+      "kind": "signature",
+      "name": "signature décalée par une ligne vide"
+    },
+    {
+      "expected": "ok",
+      "file": "tauri/payload.bin.tauri.sig",
+      "key_id": "476B683C28E52F12",
+      "kind": "signature",
+      "name": "signature produite par Tauri"
+    }
+  ],
+  "parsing_codes": [
+    "ok",
+    "malformed"
+  ],
+  "password": "appsmarket-fixtures"
+}

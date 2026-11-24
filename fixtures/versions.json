@@ -1,0 +1,34 @@
+{
+  "description": "Normalisation et ordre des versions (docs/PROTOCOLE.md, section Versions). release : version de publication, client : version envoyée par une app ; null signifie refusée.",
+  "normalize": [
+    { "input": "1.2.3", "release": "1.2.3", "client": "1.2.3" },
+    { "input": "v1.2", "release": "1.2.0", "client": "1.2.0" },
+    { "input": " V3 ", "release": "3.0.0", "client": "3.0.0" },
+    { "input": "1.2-beta.1", "release": "1.2.0-beta.1", "client": "1.2.0-beta.1" },
+    { "input": "1.4.0-rc.1", "release": "1.4.0-rc.1", "client": "1.4.0-rc.1" },
+    { "input": "1.2.3+42", "release": null, "client": "1.2.3" },
+    { "input": "1.2+42", "release": null, "client": "1.2.0" },
+    { "input": "1.2.3.4", "release": null, "client": null },
+    { "input": "", "release": null, "client": null },
+    { "input": "v", "release": null, "client": null },
+    { "input": "01.2.3", "release": null, "client": null },
+    { "input": "1..2", "release": null, "client": null },
+    { "input": "latest", "release": null, "client": null },
+    { "input": "1.2.3-", "release": null, "client": null }
+  ],
+  "ordered": [
+    "0.9.0",
+    "1.0.0-alpha",
+    "1.0.0-alpha.1",
+    "1.0.0-alpha.beta",
+    "1.0.0-beta",
+    "1.0.0-beta.2",
+    "1.0.0-beta.11",
+    "1.0.0-rc.1",
+    "1.0.0",
+    "1.0.1",
+    "1.2.0",
+    "1.10.0",
+    "2.0.0"
+  ]
+}

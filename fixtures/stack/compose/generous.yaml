@@ -1,0 +1,94 @@
+# Une stack ordinaire, qui emploie beaucoup de champs sans rien demander à la machine : aucun
+# n'est refusé, aucun ne donne de permission.
+x-journal: &journal
+  driver: json-file
+  options:
+    max-size: 10m
+    max-file: "3"
+services:
+  app:
+    image: maj.example.fr/demo/app@sha256:d812a9365b5761555d8517333f84fe8606f1f4ac82d37ac17476c55b902df23a
+    cap_drop: [ALL]
+    command: ["serve"]
+    depends_on:
+      db:
+        condition: service_healthy
+    deploy:
+      restart_policy:
+        condition: on-failure
+    dns: [1.1.1.1]
+    entrypoint: ["/bin/app"]
+    environment:
+      MODE: ${MODE:-normal}
+    expose: ["9000"]
+    extra_hosts:
+      - "interne:10.0.0.5"
+    group_add: ["1000"]
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O-", "http://127.0.0.1:9000/sante"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    hostname: demo
+    init: true
+    labels:
+      fr.example.role: app
+    logging: *journal
+    mem_reservation: 128m
+    networks:
+      interne:
+        aliases: [app]
+    oom_score_adj: 100
+    pids_limit: 200
+    read_only: true
+    restart: unless-stopped
+    secrets: [jeton]
+    configs:
+      - source: reglages
+        target: /etc/app/reglages.toml
+    security_opt: ["no-new-privileges:true"]
+    shm_size: 64m
+    stop_grace_period: 20s
+    stop_signal: SIGINT
+    sysctls:
+      net.core.somaxconn: 1024
+    tmpfs: [/tmp]
+    tty: false
+    ulimits:
+      nofile:
+        soft: 1024
+        hard: 4096
+    user: "1000:1000"
+    working_dir: /srv/app
+    volumes:
+      - data:/data
+      - type: tmpfs
+        target: /run
+      - ./files/app.conf:/etc/app/app.conf:ro
+  db:
+    image: postgres:17@sha256:4444444444444444444444444444444444444444444444444444444444444444
+    healthcheck:
+      test: ["CMD", "pg_isready"]
+    logging: *journal
+    networks: [interne]
+    restart: unless-stopped
+    volumes:
+      - base:/var/lib/postgresql/data
+volumes:
+  data:
+    labels:
+      fr.example.role: donnees
+  base:
+networks:
+  interne:
+    internal: true
+    driver_opts:
+      com.docker.network.driver.mtu: "1400"
+secrets:
+  jeton:
+    environment: HOME
+configs:
+  reglages:
+    content: |
+      mode = "normal"

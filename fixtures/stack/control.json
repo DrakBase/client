@@ -1,0 +1,67 @@
+{
+  "description": "Dossier de contrôle des mises à jour validées dans l'app (docs/PROTOCOLE.md, « Mises à jour validées dans l'app »). requests : une demande déposée par l'app (raw, texte tel quel), et ce qu'elle donne : check, update:<version>, ou le code de StackError. statuses : des status.json, valid dit s'ils se lisent ; un status.json lisible se réécrit à l'identique.",
+  "requests": [
+    { "name": "vérification", "raw": "{\"format\": 1, \"action\": \"check\"}", "expected": "check" },
+    { "name": "installation d'une version", "raw": "{\"format\": 1, \"action\": \"update\", \"version\": \"0.2.0\"}", "expected": "update:0.2.0" },
+    { "name": "pré-version", "raw": "{\"action\": \"update\", \"version\": \"1.0.0-beta.2\", \"format\": 1}", "expected": "update:1.0.0-beta.2" },
+    { "name": "pas du JSON", "raw": "update 0.2.0", "expected": "request_invalid" },
+    { "name": "pas un objet", "raw": "[\"update\"]", "expected": "request_invalid" },
+    { "name": "champ inconnu", "raw": "{\"format\": 1, \"action\": \"check\", \"force\": true}", "expected": "request_invalid" },
+    { "name": "sans format", "raw": "{\"action\": \"check\"}", "expected": "request_invalid" },
+    { "name": "format 2", "raw": "{\"format\": 2, \"action\": \"check\"}", "expected": "request_format" },
+    { "name": "format en texte", "raw": "{\"format\": \"1\", \"action\": \"check\"}", "expected": "request_invalid" },
+    { "name": "action inconnue", "raw": "{\"format\": 1, \"action\": \"rollback\"}", "expected": "request_action" },
+    { "name": "update sans version", "raw": "{\"format\": 1, \"action\": \"update\"}", "expected": "request_invalid" },
+    { "name": "check avec une version", "raw": "{\"format\": 1, \"action\": \"check\", \"version\": \"0.2.0\"}", "expected": "request_invalid" },
+    { "name": "version non canonique", "raw": "{\"format\": 1, \"action\": \"update\", \"version\": \"v0.2\"}", "expected": "request_version" },
+    { "name": "version à deux composants", "raw": "{\"format\": 1, \"action\": \"update\", \"version\": \"0.2\"}", "expected": "request_version" },
+    { "name": "version illisible", "raw": "{\"format\": 1, \"action\": \"update\", \"version\": \"latest\"}", "expected": "request_version" },
+    { "name": "version en nombre", "raw": "{\"format\": 1, \"action\": \"update\", \"version\": 2}", "expected": "request_invalid" },
+    { "name": "plus de 4 Kio", "raw": "@long", "expected": "request_too_large" }
+  ],
+  "statuses": [
+    {
+      "name": "version disponible, dernière demande réussie",
+      "valid": true,
+      "document": {
+        "format": 1,
+        "app": "home-manager",
+        "installed": "0.1.0",
+        "channel": "stable",
+        "checked_at": "2026-11-13T04:12:00Z",
+        "available": { "version": "0.2.0", "channel": "stable", "pub_date": "2026-11-12T16:00:00Z", "notes": "- Kodi, Google Cast et Android TV.", "new_permissions": [] },
+        "failed": null,
+        "operation": { "action": "update", "version": "0.2.0", "state": "done", "started_at": "2026-11-13T08:30:02Z", "finished_at": "2026-11-13T08:30:41Z", "message": "version 0.2.0 en place" }
+      }
+    },
+    {
+      "name": "permission nouvelle et version en échec",
+      "valid": true,
+      "document": {
+        "format": 1,
+        "app": "home-manager",
+        "installed": "0.1.0",
+        "channel": "beta",
+        "checked_at": "2026-11-13T04:12:00Z",
+        "available": { "version": "0.3.0-beta.1", "channel": "beta", "pub_date": "2026-11-12T16:00:00Z", "notes": "", "new_permissions": ["home-manager : port 9000/tcp sur toutes les adresses"] },
+        "failed": "0.2.0",
+        "operation": { "action": "check", "version": null, "state": "running", "started_at": "2026-11-13T08:30:02Z", "finished_at": null, "message": "vérification en cours" }
+      }
+    },
+    {
+      "name": "à jour, aucune demande",
+      "valid": true,
+      "document": { "format": 1, "app": "demo", "installed": "1.0.0", "channel": "stable", "checked_at": null, "available": null, "failed": null, "operation": null }
+    },
+    {
+      "name": "champ inconnu",
+      "valid": false,
+      "document": { "format": 1, "app": "demo", "installed": "1.0.0", "channel": "stable", "checked_at": null, "available": null, "failed": null, "operation": null, "auto": true }
+    },
+    {
+      "name": "état d'opération inconnu",
+      "valid": false,
+      "document": { "format": 1, "app": "demo", "installed": "1.0.0", "channel": "stable", "checked_at": null, "available": null, "failed": null, "operation": { "action": "update", "version": "1.1.0", "state": "queued", "started_at": "2026-11-13T08:30:02Z", "finished_at": null, "message": "" } }
+    }
+  ]
+}

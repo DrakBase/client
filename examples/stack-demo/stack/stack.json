@@ -1,0 +1,8 @@
+{
+  "format": 1,
+  "service": "demo",
+  "pre_update": "backup",
+  "rollback": "safe",
+  "health_timeout": 60,
+  "platforms": ["linux/arm64", "linux/amd64"]
+}

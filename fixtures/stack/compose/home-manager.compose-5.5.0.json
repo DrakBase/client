@@ -1,0 +1,58 @@
+{
+  "name": "home-manager",
+  "networks": {
+    "default": {
+      "name": "home-manager_default",
+      "ipam": {}
+    }
+  },
+  "services": {
+    "backup": {
+      "profiles": [
+        "drakbase-hooks"
+      ],
+      "command": [
+        "backup",
+        "/data/backups"
+      ],
+      "entrypoint": null,
+      "image": "maj.example.fr/home-manager/home-manager@sha256:d812a9365b5761555d8517333f84fe8606f1f4ac82d37ac17476c55b902df23a",
+      "networks": {
+        "default": null
+      },
+      "volumes": [
+        {
+          "type": "volume",
+          "source": "data",
+          "target": "/data",
+          "volume": {}
+        }
+      ]
+    },
+    "home-manager": {
+      "command": null,
+      "entrypoint": null,
+      "environment": {
+        "HM_PORT": "8124",
+        "HM_READ_ONLY": "0",
+        "TZ": "Europe/Paris"
+      },
+      "image": "maj.example.fr/home-manager/home-manager@sha256:d812a9365b5761555d8517333f84fe8606f1f4ac82d37ac17476c55b902df23a",
+      "network_mode": "host",
+      "restart": "unless-stopped",
+      "volumes": [
+        {
+          "type": "volume",
+          "source": "data",
+          "target": "/data",
+          "volume": {}
+        }
+      ]
+    }
+  },
+  "volumes": {
+    "data": {
+      "name": "home-manager_data"
+    }
+  }
+}

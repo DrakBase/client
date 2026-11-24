@@ -1,0 +1,2213 @@
+{
+  "exchanges": [
+    {
+      "body": [
+        {
+          "archived_at": {
+            "|": [
+              "null",
+              "string"
+            ]
+          },
+          "bundle_id": {
+            "|": [
+              "null",
+              "string"
+            ]
+          },
+          "created_at": "string",
+          "default_linux_bundle": {
+            "|": [
+              "null",
+              "string"
+            ]
+          },
+          "default_windows_bundle": {
+            "|": [
+              "null",
+              "string"
+            ]
+          },
+          "description": "string",
+          "icon_url": {
+            "|": [
+              "null",
+              "string"
+            ]
+          },
+          "keys": [
+            {
+              "created_at": "string",
+              "key_id": "string",
+              "public_key": "string",
+              "status": "string"
+            }
+          ],
+          "kind": "string",
+          "listed": "boolean",
+          "members?": [
+            {
+              "email": "string",
+              "id": "number",
+              "name": "string"
+            }
+          ],
+          "name": "string",
+          "screenshots": [
+            {
+              "caption": "string",
+              "created_at": "string",
+              "height": "number",
+              "id": "string",
+              "sha256": "string",
+              "size": "number",
+              "url": "string",
+              "width": "number"
+            }
+          ],
+          "slug": "string"
+        }
+      ],
+      "content_type": "application/json",
+      "error": null,
+      "method": "GET",
+      "route": "/api/admin/apps",
+      "status": 200
+    },
+    {
+      "body": {
+        "error": "string",
+        "message": "string"
+      },
+      "content_type": "application/json",
+      "error": "mfa_required",
+      "method": "GET",
+      "route": "/api/admin/apps",
+      "status": 401
+    },
+    {
+      "body": {
+        "error": "string",
+        "message": "string"
+      },
+      "content_type": "application/json",
+      "error": "unauthorized",
+      "method": "GET",
+      "route": "/api/admin/apps",
+      "status": 401
+    },
+    {
+      "body": {
+        "archived_at": "null",
+        "bundle_id": {
+          "|": [
+            "null",
+            "string"
+          ]
+        },
+        "created_at": "string",
+        "default_linux_bundle": "null",
+        "default_windows_bundle": "null",
+        "description": "string",
+        "icon_url": "null",
+        "keys": [],
+        "kind": "string",
+        "listed": "boolean",
+        "members": [],
+        "name": "string",
+        "screenshots": [],
+        "slug": "string"
+      },
+      "content_type": "application/json",
+      "error": null,
+      "method": "POST",
+      "route": "/api/admin/apps",
+      "status": 201
+    },
+    {
+      "body": {
+        "error": "string",
+        "message": "string"
+      },
+      "content_type": "application/json",
+      "error": "invalid_request",
+      "method": "POST",
+      "route": "/api/admin/apps",
+      "status": 400
+    },
+    {
+      "body": {
+        "error": "string",
+        "message": "string"
+      },
+      "content_type": "application/json",
+      "error": "csrf_failed",
+      "method": "POST",
+      "route": "/api/admin/apps",
+      "status": 403
+    },
+    {
+      "body": {
+        "error": "string",
+        "message": "string"
+      },
+      "content_type": "application/json",
+      "error": "forbidden",
+      "method": "POST",
+      "route": "/api/admin/apps",
+      "status": 403
+    },
+    {
+      "body": {
+        "error": "string",
+        "message": "string"
+      },
+      "content_type": "application/json",
+      "error": "conflict",
+      "method": "POST",
+      "route": "/api/admin/apps",
+      "status": 409
+    },
+    {
+      "body": {
+        "error": "string",
+        "message": "string"
+      },
+      "content_type": "application/json",
+      "error": "unsupported_media_type",
+      "method": "POST",
+      "route": "/api/admin/apps",
+      "status": 415
+    },
+    {
+      "body": {
+        "error": "string",
+        "message": "string"
+      },
+      "content_type": "application/json",
+      "error": "method_not_allowed",
+      "method": "PUT",
+      "route": "/api/admin/apps",
+      "status": 405
+    },
+    {
+      "body": null,
+      "content_type": null,
+      "error": null,
+      "method": "DELETE",
+      "route": "/api/admin/apps/{app}",
+      "status": 204
+    },
+    {
+      "body": {
+        "archived_at": {
+          "|": [
+            "null",
+            "string"
+          ]
+        },
+        "bundle_id": {
+          "|": [
+            "null",
+            "string"
+          ]
+        },
+        "created_at": "string",
+        "default_linux_bundle": {
+          "|": [
+            "null",
+            "string"
+          ]
+        },
+        "default_windows_bundle": {
+          "|": [
+            "null",
+            "string"
+          ]
+        },
+        "description": "string",
+        "icon_url": {
+          "|": [
+            "null",
+            "string"
+          ]
+        },
+        "keys": [
+          {
+            "created_at": "string",
+            "key_id": "string",
+            "public_key": "string",
+            "status": "string"
+          }
+        ],
+        "kind": "string",
+        "listed": "boolean",
+        "members?": [
+          {
+            "email": "string",
+            "id": "number",
+            "name": "string"
+          }
+        ],
+        "name": "string",
+        "screenshots": [
+          {
+            "caption": "string",
+            "created_at": "string",
+            "height": "number",
+            "id": "string",
+            "sha256": "string",
+            "size": "number",
+            "url": "string",
+            "width": "number"
+          }
+        ],
+        "slug": "string"
+      },
+      "content_type": "application/json",
+      "error": null,
+      "method": "GET",
+      "route": "/api/admin/apps/{app}",
+      "status": 200
+    },
+    {
+      "body": {
+        "error": "string",
+        "message": "string"
+      },
+      "content_type": "application/json",
+      "error": "not_found",
+      "method": "GET",
+      "route": "/api/admin/apps/{app}",
+      "status": 404
+    },
+    {
+      "body": {
+        "archived_at": "null",
+        "bundle_id": {
+          "|": [
+            "null",
+            "string"
+          ]
+        },
+        "created_at": "string",
+        "default_linux_bundle": {
+          "|": [
+            "null",
+            "string"
+          ]
+        },
+        "default_windows_bundle": {
+          "|": [
+            "null",
+            "string"
+          ]
+        },
+        "description": "string",
+        "icon_url": {
+          "|": [
+            "null",
+            "string"
+          ]
+        },
+        "keys": [
+          {
+            "created_at": "string",
+            "key_id": "string",
+            "public_key": "string",
+            "status": "string"
+          }
+        ],
+        "kind": "string",
+        "listed": "boolean",
+        "members?": [
+          {
+            "email": "string",
+            "id": "number",
+            "name": "string"
+          }
+        ],
+        "name": "string",
+        "screenshots": [
+          {
+            "caption": "string",
+            "created_at": "string",
+            "height": "number",
+            "id": "string",
+            "sha256": "string",
+            "size": "number",
+            "url": "string",
+            "width": "number"
+          }
+        ],
+        "slug": "string"
+      },
+      "content_type": "application/json",
+      "error": null,
+      "method": "PATCH",
+      "route": "/api/admin/apps/{app}",
+      "status": 200
+    },
+    {
+      "body": {
+        "error": "string",
+        "message": "string"
+      },
+      "content_type": "application/json",
+      "error": "invalid_request",
+      "method": "PATCH",
+      "route": "/api/admin/apps/{app}",
+      "status": 400
+    },
+    {
+      "body": {
+        "error": "string",
+        "message": "string"
+      },
+      "content_type": "application/json",
+      "error": "forbidden",
+      "method": "PATCH",
+      "route": "/api/admin/apps/{app}",
+      "status": 403
+    },
+    {
+      "body": {
+        "error": "string",
+        "message": "string"
+      },
+      "content_type": "application/json",
+      "error": "conflict",
+      "method": "PATCH",
+      "route": "/api/admin/apps/{app}",
+      "status": 409
+    },
+    {
+      "body": null,
+      "content_type": null,
+      "error": null,
+      "method": "DELETE",
+      "route": "/api/admin/apps/{app}/artifacts/{artifact_id}",
+      "status": 204
+    },
+    {
+      "body": {
+        "error": "string",
+        "message": "string"
+      },
+      "content_type": "application/json",
+      "error": "not_found",
+      "method": "DELETE",
+      "route": "/api/admin/apps/{app}/artifacts/{artifact_id}",
+      "status": 404
+    },
+    {
+      "body": null,
+      "content_type": null,
+      "error": null,
+      "method": "DELETE",
+      "route": "/api/admin/apps/{app}/icon",
+      "status": 204
+    },
+    {
+      "body": null,
+      "content_type": "image/png",
+      "error": null,
+      "method": "GET",
+      "route": "/api/admin/apps/{app}/icon",
+      "status": 200
+    },
+    {
+      "body": {
+        "error": "string",
+        "message": "string"
+      },
+      "content_type": "application/json",
+      "error": "not_found",
+      "method": "GET",
+      "route": "/api/admin/apps/{app}/icon",
+      "status": 404
+    },
+    {
+      "body": null,
+      "content_type": null,
+      "error": null,
+      "method": "PUT",
+      "route": "/api/admin/apps/{app}/icon",
+      "status": 204
+    },
+    {
+      "body": {
+        "error": "string",
+        "message": "string"
+      },
+      "content_type": "application/json",
+      "error": "invalid_request",
+      "method": "PUT",
+      "route": "/api/admin/apps/{app}/icon",
+      "status": 400
+    },
+    {
+      "body": {
+        "error": "string",
+        "message": "string"
+      },
+      "content_type": "application/json",
+      "error": "unsupported_media_type",
+      "method": "PUT",
+      "route": "/api/admin/apps/{app}/icon",
+      "status": 415
+    },
+    {
+      "body": {
+        "created_at": "string",
+        "key_id": "string",
+        "public_key": "string",
+        "status": "string"
+      },
+      "content_type": "application/json",
+      "error": null,
+      "method": "POST",
+      "route": "/api/admin/apps/{app}/keys",
+      "status": 201
+    },
+    {
+      "body": {
+        "error": "string",
+        "message": "string"
+      },
+      "content_type": "application/json",
+      "error": "invalid_request",
+      "method": "POST",
+      "route": "/api/admin/apps/{app}/keys",
+      "status": 400
+    },
+    {
+      "body": {
+        "error": "string",
+        "message": "string"
+      },
+      "content_type": "application/json",
+      "error": "conflict",
+      "method": "POST",
+      "route": "/api/admin/apps/{app}/keys",
+      "status": 409
+    },
+    {
+      "body": {
+        "created_at": "string",
+        "key_id": "string",
+        "public_key": "string",
+        "status": "string"
+      },
+      "content_type": "application/json",
+      "error": null,
+      "method": "PATCH",
+      "route": "/api/admin/apps/{app}/keys/{key_id}",
+      "status": 200
+    },
+    {
+      "body": {
+        "error": "string",
+        "message": "string"
+      },
+      "content_type": "application/json",
+      "error": "not_found",
+      "method": "PATCH",
+      "route": "/api/admin/apps/{app}/keys/{key_id}",
+      "status": 404
+    },
+    {
+      "body": {
+        "archived_at": "null",
+        "bundle_id": {
+          "|": [
+            "null",
+            "string"
+          ]
+        },
+        "created_at": "string",
+        "default_linux_bundle": {
+          "|": [
+            "null",
+            "string"
+          ]
+        },
+        "default_windows_bundle": {
+          "|": [
+            "null",
+            "string"
+          ]
+        },
+        "description": "string",
+        "icon_url": {
+          "|": [
+            "null",
+            "string"
+          ]
+        },
+        "keys": [
+          {
+            "created_at": "string",
+            "key_id": "string",
+            "public_key": "string",
+            "status": "string"
+          }
+        ],
+        "kind": "string",
+        "listed": "boolean",
+        "members": [
+          {
+            "email": "string",
+            "id": "number",
+            "name": "string"
+          }
+        ],
+        "name": "string",
+        "screenshots": [
+          {
+            "caption": "string",
+            "created_at": "string",
+            "height": "number",
+            "id": "string",
+            "sha256": "string",
+            "size": "number",
+            "url": "string",
+            "width": "number"
+          }
+        ],
+        "slug": "string"
+      },
+      "content_type": "application/json",
+      "error": null,
+      "method": "PUT",
+      "route": "/api/admin/apps/{app}/members",
+      "status": 200
+    },
+    {
+      "body": {
+        "error": "string",
+        "message": "string"
+      },
+      "content_type": "application/json",
+      "error": "invalid_request",
+      "method": "PUT",
+      "route": "/api/admin/apps/{app}/members",
+      "status": 400
+    },
+    {
+      "body": [
+        {
+          "artifacts": [
+            {
+              "arch": "string",
+              "bundle_type": "string",
+              "created_at": "string",
+              "filename": "string",
+              "id": "string",
+              "min_os_version": {
+                "|": [
+                  "null",
+                  "string"
+                ]
+              },
+              "os": "string",
+              "sha256": "string",
+              "signed_key_id": {
+                "|": [
+                  "null",
+                  "string"
+                ]
+              },
+              "signed_version": {
+                "|": [
+                  "null",
+                  "string"
+                ]
+              },
+              "size": "number",
+              "url": "string"
+            }
+          ],
+          "channel": "string",
+          "created_at": "string",
+          "created_by": {
+            "email": "string",
+            "id": "number",
+            "name": "string"
+          },
+          "images?": [
+            {
+              "digest": "string",
+              "image": "string",
+              "platforms": [
+                {
+                  "platform": "string",
+                  "size": "number"
+                }
+              ]
+            }
+          ],
+          "notes_md": "string",
+          "published_at": {
+            "|": [
+              "null",
+              "string"
+            ]
+          },
+          "status": "string",
+          "trusted_key_ids": [
+            "string"
+          ],
+          "version": "string",
+          "yank_reason": {
+            "|": [
+              "null",
+              "string"
+            ]
+          },
+          "yanked_at": {
+            "|": [
+              "null",
+              "string"
+            ]
+          }
+        }
+      ],
+      "content_type": "application/json",
+      "error": null,
+      "method": "GET",
+      "route": "/api/admin/apps/{app}/releases",
+      "status": 200
+    },
+    {
+      "body": {
+        "artifacts": [],
+        "channel": "string",
+        "created_at": "string",
+        "created_by": {
+          "email": "string",
+          "id": "number",
+          "name": "string"
+        },
+        "notes_md": "string",
+        "published_at": "null",
+        "status": "string",
+        "trusted_key_ids": [
+          "string"
+        ],
+        "version": "string",
+        "yank_reason": "null",
+        "yanked_at": "null"
+      },
+      "content_type": "application/json",
+      "error": null,
+      "method": "POST",
+      "route": "/api/admin/apps/{app}/releases",
+      "status": 201
+    },
+    {
+      "body": {
+        "error": "string",
+        "message": "string"
+      },
+      "content_type": "application/json",
+      "error": "version_invalid",
+      "method": "POST",
+      "route": "/api/admin/apps/{app}/releases",
+      "status": 400
+    },
+    {
+      "body": {
+        "error": "string",
+        "message": "string"
+      },
+      "content_type": "application/json",
+      "error": "conflict",
+      "method": "POST",
+      "route": "/api/admin/apps/{app}/releases",
+      "status": 409
+    },
+    {
+      "body": null,
+      "content_type": null,
+      "error": null,
+      "method": "DELETE",
+      "route": "/api/admin/apps/{app}/releases/{version}",
+      "status": 204
+    },
+    {
+      "body": {
+        "error": "string",
+        "message": "string"
+      },
+      "content_type": "application/json",
+      "error": "forbidden",
+      "method": "DELETE",
+      "route": "/api/admin/apps/{app}/releases/{version}",
+      "status": 403
+    },
+    {
+      "body": {
+        "artifacts": [
+          {
+            "arch": "string",
+            "bundle_type": "string",
+            "created_at": "string",
+            "filename": "string",
+            "id": "string",
+            "min_os_version": {
+              "|": [
+                "null",
+                "string"
+              ]
+            },
+            "os": "string",
+            "sha256": "string",
+            "signed_key_id": {
+              "|": [
+                "null",
+                "string"
+              ]
+            },
+            "signed_version": {
+              "|": [
+                "null",
+                "string"
+              ]
+            },
+            "size": "number",
+            "url": "string"
+          }
+        ],
+        "channel": "string",
+        "created_at": "string",
+        "created_by": {
+          "email": "string",
+          "id": "number",
+          "name": "string"
+        },
+        "images?": [
+          {
+            "digest": "string",
+            "image": "string",
+            "platforms": [
+              {
+                "platform": "string",
+                "size": "number"
+              }
+            ]
+          }
+        ],
+        "notes_md": "string",
+        "published_at": {
+          "|": [
+            "null",
+            "string"
+          ]
+        },
+        "status": "string",
+        "trusted_key_ids": [
+          "string"
+        ],
+        "version": "string",
+        "yank_reason": {
+          "|": [
+            "null",
+            "string"
+          ]
+        },
+        "yanked_at": {
+          "|": [
+            "null",
+            "string"
+          ]
+        }
+      },
+      "content_type": "application/json",
+      "error": null,
+      "method": "GET",
+      "route": "/api/admin/apps/{app}/releases/{version}",
+      "status": 200
+    },
+    {
+      "body": {
+        "error": "string",
+        "message": "string"
+      },
+      "content_type": "application/json",
+      "error": "not_found",
+      "method": "GET",
+      "route": "/api/admin/apps/{app}/releases/{version}",
+      "status": 404
+    },
+    {
+      "body": {
+        "artifacts": [
+          {
+            "arch": "string",
+            "bundle_type": "string",
+            "created_at": "string",
+            "filename": "string",
+            "id": "string",
+            "min_os_version": {
+              "|": [
+                "null",
+                "string"
+              ]
+            },
+            "os": "string",
+            "sha256": "string",
+            "signed_key_id": {
+              "|": [
+                "null",
+                "string"
+              ]
+            },
+            "signed_version": {
+              "|": [
+                "null",
+                "string"
+              ]
+            },
+            "size": "number",
+            "url": "string"
+          }
+        ],
+        "channel": "string",
+        "created_at": "string",
+        "created_by": {
+          "email": "string",
+          "id": "number",
+          "name": "string"
+        },
+        "notes_md": "string",
+        "published_at": {
+          "|": [
+            "null",
+            "string"
+          ]
+        },
+        "status": "string",
+        "trusted_key_ids": [
+          "string"
+        ],
+        "version": "string",
+        "yank_reason": {
+          "|": [
+            "null",
+            "string"
+          ]
+        },
+        "yanked_at": {
+          "|": [
+            "null",
+            "string"
+          ]
+        }
+      },
+      "content_type": "application/json",
+      "error": null,
+      "method": "PATCH",
+      "route": "/api/admin/apps/{app}/releases/{version}",
+      "status": 200
+    },
+    {
+      "body": {
+        "arch": "string",
+        "bundle_type": "string",
+        "created_at": "string",
+        "filename": "string",
+        "id": "string",
+        "min_os_version": {
+          "|": [
+            "null",
+            "string"
+          ]
+        },
+        "os": "string",
+        "sha256": "string",
+        "signed_key_id": {
+          "|": [
+            "null",
+            "string"
+          ]
+        },
+        "signed_version": {
+          "|": [
+            "null",
+            "string"
+          ]
+        },
+        "size": "number",
+        "url": "string"
+      },
+      "content_type": "application/json",
+      "error": null,
+      "method": "PUT",
+      "route": "/api/admin/apps/{app}/releases/{version}/artifacts/{os}/{arch}/{bundle_type}",
+      "status": 201
+    },
+    {
+      "body": {
+        "error": "string",
+        "message": "string"
+      },
+      "content_type": "application/json",
+      "error": "artifact_invalid",
+      "method": "PUT",
+      "route": "/api/admin/apps/{app}/releases/{version}/artifacts/{os}/{arch}/{bundle_type}",
+      "status": 422
+    },
+    {
+      "body": {
+        "error": "string",
+        "message": "string"
+      },
+      "content_type": "application/json",
+      "error": "signature_invalid",
+      "method": "PUT",
+      "route": "/api/admin/apps/{app}/releases/{version}/artifacts/{os}/{arch}/{bundle_type}",
+      "server_only": true,
+      "status": 422
+    },
+    {
+      "body": {
+        "artifacts": [
+          {
+            "arch": "string",
+            "bundle_type": "string",
+            "created_at": "string",
+            "filename": "string",
+            "id": "string",
+            "min_os_version": {
+              "|": [
+                "null",
+                "string"
+              ]
+            },
+            "os": "string",
+            "sha256": "string",
+            "signed_key_id": {
+              "|": [
+                "null",
+                "string"
+              ]
+            },
+            "signed_version": {
+              "|": [
+                "null",
+                "string"
+              ]
+            },
+            "size": "number",
+            "url": "string"
+          }
+        ],
+        "channel": "string",
+        "created_at": "string",
+        "created_by": {
+          "email": "string",
+          "id": "number",
+          "name": "string"
+        },
+        "notes_md": "string",
+        "published_at": "string",
+        "status": "string",
+        "trusted_key_ids": [
+          "string"
+        ],
+        "version": "string",
+        "yank_reason": "null",
+        "yanked_at": "null"
+      },
+      "content_type": "application/json",
+      "error": null,
+      "method": "POST",
+      "route": "/api/admin/apps/{app}/releases/{version}/publish",
+      "status": 200
+    },
+    {
+      "body": {
+        "error": "string",
+        "message": "string"
+      },
+      "content_type": "application/json",
+      "error": "conflict",
+      "method": "POST",
+      "route": "/api/admin/apps/{app}/releases/{version}/publish",
+      "status": 409
+    },
+    {
+      "body": {
+        "artifacts": [
+          {
+            "arch": "string",
+            "bundle_type": "string",
+            "created_at": "string",
+            "filename": "string",
+            "id": "string",
+            "min_os_version": {
+              "|": [
+                "null",
+                "string"
+              ]
+            },
+            "os": "string",
+            "sha256": "string",
+            "signed_key_id": {
+              "|": [
+                "null",
+                "string"
+              ]
+            },
+            "signed_version": {
+              "|": [
+                "null",
+                "string"
+              ]
+            },
+            "size": "number",
+            "url": "string"
+          }
+        ],
+        "channel": "string",
+        "created_at": "string",
+        "created_by": {
+          "email": "string",
+          "id": "number",
+          "name": "string"
+        },
+        "notes_md": "string",
+        "published_at": "string",
+        "status": "string",
+        "trusted_key_ids": [
+          "string"
+        ],
+        "version": "string",
+        "yank_reason": "null",
+        "yanked_at": "null"
+      },
+      "content_type": "application/json",
+      "error": null,
+      "method": "POST",
+      "route": "/api/admin/apps/{app}/releases/{version}/unyank",
+      "status": 200
+    },
+    {
+      "body": {
+        "error": "string",
+        "message": "string"
+      },
+      "content_type": "application/json",
+      "error": "conflict",
+      "method": "POST",
+      "route": "/api/admin/apps/{app}/releases/{version}/unyank",
+      "status": 409
+    },
+    {
+      "body": {
+        "artifacts": [
+          {
+            "arch": "string",
+            "bundle_type": "string",
+            "created_at": "string",
+            "filename": "string",
+            "id": "string",
+            "min_os_version": {
+              "|": [
+                "null",
+                "string"
+              ]
+            },
+            "os": "string",
+            "sha256": "string",
+            "signed_key_id": {
+              "|": [
+                "null",
+                "string"
+              ]
+            },
+            "signed_version": {
+              "|": [
+                "null",
+                "string"
+              ]
+            },
+            "size": "number",
+            "url": "string"
+          }
+        ],
+        "channel": "string",
+        "created_at": "string",
+        "created_by": {
+          "email": "string",
+          "id": "number",
+          "name": "string"
+        },
+        "notes_md": "string",
+        "published_at": "string",
+        "status": "string",
+        "trusted_key_ids": [
+          "string"
+        ],
+        "version": "string",
+        "yank_reason": "string",
+        "yanked_at": "string"
+      },
+      "content_type": "application/json",
+      "error": null,
+      "method": "POST",
+      "route": "/api/admin/apps/{app}/releases/{version}/yank",
+      "status": 200
+    },
+    {
+      "body": {
+        "caption": "string",
+        "created_at": "string",
+        "height": "number",
+        "id": "string",
+        "sha256": "string",
+        "size": "number",
+        "url": "string",
+        "width": "number"
+      },
+      "content_type": "application/json",
+      "error": null,
+      "method": "POST",
+      "route": "/api/admin/apps/{app}/screenshots",
+      "status": 200
+    },
+    {
+      "body": {
+        "caption": "string",
+        "created_at": "string",
+        "height": "number",
+        "id": "string",
+        "sha256": "string",
+        "size": "number",
+        "url": "string",
+        "width": "number"
+      },
+      "content_type": "application/json",
+      "error": null,
+      "method": "POST",
+      "route": "/api/admin/apps/{app}/screenshots",
+      "status": 201
+    },
+    {
+      "body": {
+        "error": "string",
+        "message": "string"
+      },
+      "content_type": "application/json",
+      "error": "invalid_request",
+      "method": "POST",
+      "route": "/api/admin/apps/{app}/screenshots",
+      "status": 400
+    },
+    {
+      "body": [
+        {
+          "caption": "string",
+          "created_at": "string",
+          "height": "number",
+          "id": "string",
+          "sha256": "string",
+          "size": "number",
+          "url": "string",
+          "width": "number"
+        }
+      ],
+      "content_type": "application/json",
+      "error": null,
+      "method": "PUT",
+      "route": "/api/admin/apps/{app}/screenshots/order",
+      "status": 200
+    },
+    {
+      "body": {
+        "error": "string",
+        "message": "string"
+      },
+      "content_type": "application/json",
+      "error": "invalid_request",
+      "method": "PUT",
+      "route": "/api/admin/apps/{app}/screenshots/order",
+      "status": 400
+    },
+    {
+      "body": null,
+      "content_type": null,
+      "error": null,
+      "method": "DELETE",
+      "route": "/api/admin/apps/{app}/screenshots/{id}",
+      "status": 204
+    },
+    {
+      "body": {
+        "error": "string",
+        "message": "string"
+      },
+      "content_type": "application/json",
+      "error": "not_found",
+      "method": "DELETE",
+      "route": "/api/admin/apps/{app}/screenshots/{id}",
+      "status": 404
+    },
+    {
+      "body": null,
+      "content_type": "image/png",
+      "error": null,
+      "method": "GET",
+      "route": "/api/admin/apps/{app}/screenshots/{id}",
+      "status": 200
+    },
+    {
+      "body": {
+        "caption": "string",
+        "created_at": "string",
+        "height": "number",
+        "id": "string",
+        "sha256": "string",
+        "size": "number",
+        "url": "string",
+        "width": "number"
+      },
+      "content_type": "application/json",
+      "error": null,
+      "method": "PATCH",
+      "route": "/api/admin/apps/{app}/screenshots/{id}",
+      "status": 200
+    },
+    {
+      "body": {
+        "downloads": [
+          {
+            "day": "string",
+            "downloads": "number",
+            "key": "string",
+            "source": "string"
+          }
+        ],
+        "installs": [
+          {
+            "checks": "number",
+            "day": "string",
+            "installs": "number",
+            "key": "string"
+          }
+        ]
+      },
+      "content_type": "application/json",
+      "error": null,
+      "method": "GET",
+      "route": "/api/admin/apps/{app}/stats",
+      "status": 200
+    },
+    {
+      "body": {
+        "error": "string",
+        "message": "string"
+      },
+      "content_type": "application/json",
+      "error": "invalid_request",
+      "method": "GET",
+      "route": "/api/admin/apps/{app}/stats",
+      "status": 400
+    },
+    {
+      "body": {
+        "archived_at": "null",
+        "bundle_id": {
+          "|": [
+            "null",
+            "string"
+          ]
+        },
+        "created_at": "string",
+        "default_linux_bundle": {
+          "|": [
+            "null",
+            "string"
+          ]
+        },
+        "default_windows_bundle": {
+          "|": [
+            "null",
+            "string"
+          ]
+        },
+        "description": "string",
+        "icon_url": {
+          "|": [
+            "null",
+            "string"
+          ]
+        },
+        "keys": [
+          {
+            "created_at": "string",
+            "key_id": "string",
+            "public_key": "string",
+            "status": "string"
+          }
+        ],
+        "kind": "string",
+        "listed": "boolean",
+        "members": [
+          {
+            "email": "string",
+            "id": "number",
+            "name": "string"
+          }
+        ],
+        "name": "string",
+        "screenshots": [
+          {
+            "caption": "string",
+            "created_at": "string",
+            "height": "number",
+            "id": "string",
+            "sha256": "string",
+            "size": "number",
+            "url": "string",
+            "width": "number"
+          }
+        ],
+        "slug": "string"
+      },
+      "content_type": "application/json",
+      "error": null,
+      "method": "POST",
+      "route": "/api/admin/apps/{app}/unarchive",
+      "status": 200
+    },
+    {
+      "body": {
+        "entries": [
+          {
+            "action": "string",
+            "actor": "string",
+            "app": {
+              "|": [
+                "null",
+                "string"
+              ]
+            },
+            "at": "string",
+            "details": {
+              "added?": [
+                "number"
+              ],
+              "arch?": "string",
+              "artifacts?": "number",
+              "attempt?": "number",
+              "bundle_id?": {
+                "|": [
+                  "null",
+                  "string"
+                ]
+              },
+              "bundle_type?": "string",
+              "channel?": {
+                "|": [
+                  "string",
+                  {
+                    "from": "string",
+                    "to": "string"
+                  }
+                ]
+              },
+              "digest?": "string",
+              "expires_at?": "string",
+              "fields?": [
+                "string"
+              ],
+              "filename?": "string",
+              "from?": "string",
+              "id?": {
+                "|": [
+                  "number",
+                  "string"
+                ]
+              },
+              "images?": {
+                "web": "string"
+              },
+              "kind?": "string",
+              "listed?": {
+                "|": [
+                  "null",
+                  "boolean"
+                ]
+              },
+              "media_type?": "string",
+              "method?": "string",
+              "name?": {
+                "from": "string",
+                "to": "string"
+              },
+              "notes_md?": "boolean",
+              "op?": "string",
+              "os?": "string",
+              "platform?": {
+                "|": [
+                  "null",
+                  "string"
+                ]
+              },
+              "prefix?": "string",
+              "purpose?": "string",
+              "reason?": "string",
+              "removed?": {
+                "|": [
+                  "boolean",
+                  [
+                    "number"
+                  ]
+                ]
+              },
+              "replaced?": {
+                "|": [
+                  "null",
+                  "string"
+                ]
+              },
+              "retired?": {
+                "|": [
+                  "null",
+                  "string"
+                ]
+              },
+              "role?": "string",
+              "scopes?": [
+                "string"
+              ],
+              "sha256?": "string",
+              "signed_key_id?": {
+                "|": [
+                  "null",
+                  "string"
+                ]
+              },
+              "size?": "number",
+              "stage?": "string",
+              "status?": "string",
+              "to?": "string",
+              "trusted_key_ids?": [
+                "string"
+              ],
+              "user_id?": "number",
+              "version?": "string"
+            },
+            "id": "number",
+            "ip": {
+              "|": [
+                "null",
+                "string"
+              ]
+            },
+            "target": {
+              "|": [
+                "null",
+                "string"
+              ]
+            }
+          }
+        ],
+        "next_before": {
+          "|": [
+            "null",
+            "number"
+          ]
+        }
+      },
+      "content_type": "application/json",
+      "error": null,
+      "method": "GET",
+      "route": "/api/admin/audit",
+      "status": 200
+    },
+    {
+      "body": {
+        "error": "string",
+        "message": "string"
+      },
+      "content_type": "application/json",
+      "error": "invalid_request",
+      "method": "GET",
+      "route": "/api/admin/audit",
+      "status": 400
+    },
+    {
+      "body": {
+        "csrf_token": "string",
+        "stage": "string",
+        "user": {
+          "|": [
+            "null",
+            {
+              "email": "string",
+              "id": "number",
+              "name": "string",
+              "role": "string",
+              "totp_enabled": "boolean"
+            }
+          ]
+        }
+      },
+      "content_type": "application/json",
+      "error": null,
+      "method": "POST",
+      "route": "/api/admin/auth/login",
+      "status": 200
+    },
+    {
+      "body": {
+        "error": "string",
+        "message": "string"
+      },
+      "content_type": "application/json",
+      "error": "invalid_credentials",
+      "method": "POST",
+      "route": "/api/admin/auth/login",
+      "status": 401
+    },
+    {
+      "body": {
+        "error": "string",
+        "message": "string"
+      },
+      "content_type": "application/json",
+      "error": "rate_limited",
+      "method": "POST",
+      "route": "/api/admin/auth/login",
+      "status": 429
+    },
+    {
+      "body": null,
+      "content_type": null,
+      "error": null,
+      "method": "POST",
+      "route": "/api/admin/auth/logout",
+      "status": 204
+    },
+    {
+      "body": {
+        "csrf_token": "string",
+        "stage": "string",
+        "user": {
+          "email": "string",
+          "id": "number",
+          "name": "string",
+          "role": "string",
+          "totp_enabled": "boolean"
+        }
+      },
+      "content_type": "application/json",
+      "error": null,
+      "method": "POST",
+      "route": "/api/admin/auth/mfa",
+      "status": 200
+    },
+    {
+      "body": {
+        "error": "string",
+        "message": "string"
+      },
+      "content_type": "application/json",
+      "error": "invalid_code",
+      "method": "POST",
+      "route": "/api/admin/auth/mfa",
+      "status": 401
+    },
+    {
+      "body": {
+        "error": "string",
+        "message": "string"
+      },
+      "content_type": "application/json",
+      "error": "unauthorized",
+      "method": "POST",
+      "route": "/api/admin/auth/mfa",
+      "status": 401
+    },
+    {
+      "body": {
+        "error": "string",
+        "message": "string"
+      },
+      "content_type": "application/json",
+      "error": "rate_limited",
+      "method": "POST",
+      "route": "/api/admin/auth/mfa",
+      "status": 429
+    },
+    {
+      "body": {
+        "sudo_until": "string"
+      },
+      "content_type": "application/json",
+      "error": null,
+      "method": "POST",
+      "route": "/api/admin/auth/reauth",
+      "status": 200
+    },
+    {
+      "body": {
+        "error": "string",
+        "message": "string"
+      },
+      "content_type": "application/json",
+      "error": "invalid_credentials",
+      "method": "POST",
+      "route": "/api/admin/auth/reauth",
+      "status": 401
+    },
+    {
+      "body": {
+        "error": "string",
+        "message": "string"
+      },
+      "content_type": "application/json",
+      "error": "rate_limited",
+      "method": "POST",
+      "route": "/api/admin/auth/reauth",
+      "status": 429
+    },
+    {
+      "body": {
+        "csrf_token": "string",
+        "stage": "string",
+        "sudo_until": {
+          "|": [
+            "null",
+            "string"
+          ]
+        },
+        "user": {
+          "|": [
+            "null",
+            {
+              "email": "string",
+              "id": "number",
+              "name": "string",
+              "role": "string",
+              "totp_enabled": "boolean"
+            }
+          ]
+        }
+      },
+      "content_type": "application/json",
+      "error": null,
+      "method": "GET",
+      "route": "/api/admin/auth/session",
+      "status": 200
+    },
+    {
+      "body": {
+        "error": "string",
+        "message": "string"
+      },
+      "content_type": "application/json",
+      "error": "unauthorized",
+      "method": "GET",
+      "route": "/api/admin/auth/session",
+      "status": 401
+    },
+    {
+      "body": {
+        "csrf_token": "string",
+        "stage": "string",
+        "user": {
+          "email": "string",
+          "id": "number",
+          "name": "string",
+          "role": "string",
+          "totp_enabled": "boolean"
+        }
+      },
+      "content_type": "application/json",
+      "error": null,
+      "method": "POST",
+      "route": "/api/admin/auth/setup",
+      "status": 200
+    },
+    {
+      "body": {
+        "error": "string",
+        "message": "string"
+      },
+      "content_type": "application/json",
+      "error": "unauthorized",
+      "method": "POST",
+      "route": "/api/admin/auth/setup",
+      "status": 401
+    },
+    {
+      "body": null,
+      "content_type": null,
+      "error": null,
+      "method": "POST",
+      "route": "/api/admin/me/password",
+      "status": 204
+    },
+    {
+      "body": {
+        "error": "string",
+        "message": "string"
+      },
+      "content_type": "application/json",
+      "error": "invalid_credentials",
+      "method": "POST",
+      "route": "/api/admin/me/password",
+      "status": 401
+    },
+    {
+      "body": {
+        "error": "string",
+        "message": "string"
+      },
+      "content_type": "application/json",
+      "error": "rate_limited",
+      "method": "POST",
+      "route": "/api/admin/me/password",
+      "status": 429
+    },
+    {
+      "body": {
+        "recovery_codes": [
+          "string"
+        ]
+      },
+      "content_type": "application/json",
+      "error": null,
+      "method": "POST",
+      "route": "/api/admin/me/recovery-codes",
+      "status": 200
+    },
+    {
+      "body": [
+        {
+          "app": {
+            "|": [
+              "null",
+              "string"
+            ]
+          },
+          "created_at": "string",
+          "expires_at": "string",
+          "id": "number",
+          "last_used_at": {
+            "|": [
+              "null",
+              "string"
+            ]
+          },
+          "name": "string",
+          "prefix": "string",
+          "revoked_at": {
+            "|": [
+              "null",
+              "string"
+            ]
+          },
+          "scopes": [
+            "string"
+          ]
+        }
+      ],
+      "content_type": "application/json",
+      "error": null,
+      "method": "GET",
+      "route": "/api/admin/me/tokens",
+      "status": 200
+    },
+    {
+      "body": {
+        "secret": "string",
+        "token": {
+          "app": {
+            "|": [
+              "null",
+              "string"
+            ]
+          },
+          "created_at": "string",
+          "expires_at": "string",
+          "id": "number",
+          "last_used_at": "null",
+          "name": "string",
+          "prefix": "string",
+          "revoked_at": "null",
+          "scopes": [
+            "string"
+          ]
+        }
+      },
+      "content_type": "application/json",
+      "error": null,
+      "method": "POST",
+      "route": "/api/admin/me/tokens",
+      "status": 201
+    },
+    {
+      "body": {
+        "error": "string",
+        "message": "string"
+      },
+      "content_type": "application/json",
+      "error": "invalid_request",
+      "method": "POST",
+      "route": "/api/admin/me/tokens",
+      "status": 400
+    },
+    {
+      "body": {
+        "error": "string",
+        "message": "string"
+      },
+      "content_type": "application/json",
+      "error": "reauth_required",
+      "method": "POST",
+      "route": "/api/admin/me/tokens",
+      "status": 403
+    },
+    {
+      "body": null,
+      "content_type": null,
+      "error": null,
+      "method": "DELETE",
+      "route": "/api/admin/me/tokens/{id}",
+      "status": 204
+    },
+    {
+      "body": {
+        "error": "string",
+        "message": "string"
+      },
+      "content_type": "application/json",
+      "error": "not_found",
+      "method": "DELETE",
+      "route": "/api/admin/me/tokens/{id}",
+      "status": 404
+    },
+    {
+      "body": {
+        "recovery_codes": [
+          "string"
+        ]
+      },
+      "content_type": "application/json",
+      "error": null,
+      "method": "POST",
+      "route": "/api/admin/me/totp/confirm",
+      "status": 200
+    },
+    {
+      "body": {
+        "error": "string",
+        "message": "string"
+      },
+      "content_type": "application/json",
+      "error": "invalid_code",
+      "method": "POST",
+      "route": "/api/admin/me/totp/confirm",
+      "status": 401
+    },
+    {
+      "body": {
+        "error": "string",
+        "message": "string"
+      },
+      "content_type": "application/json",
+      "error": "conflict",
+      "method": "POST",
+      "route": "/api/admin/me/totp/confirm",
+      "status": 409
+    },
+    {
+      "body": null,
+      "content_type": null,
+      "error": null,
+      "method": "POST",
+      "route": "/api/admin/me/totp/disable",
+      "status": 204
+    },
+    {
+      "body": {
+        "error": "string",
+        "message": "string"
+      },
+      "content_type": "application/json",
+      "error": "forbidden",
+      "method": "POST",
+      "route": "/api/admin/me/totp/disable",
+      "status": 403
+    },
+    {
+      "body": {
+        "otpauth_uri": "string",
+        "qr_data_url": "string",
+        "secret": "string"
+      },
+      "content_type": "application/json",
+      "error": null,
+      "method": "POST",
+      "route": "/api/admin/me/totp/setup",
+      "status": 200
+    },
+    {
+      "body": {
+        "error": "string",
+        "message": "string"
+      },
+      "content_type": "application/json",
+      "error": "reauth_required",
+      "method": "POST",
+      "route": "/api/admin/me/totp/setup",
+      "status": 403
+    },
+    {
+      "body": {
+        "error": "string",
+        "message": "string"
+      },
+      "content_type": "application/json",
+      "error": "conflict",
+      "method": "POST",
+      "route": "/api/admin/me/totp/setup",
+      "status": 409
+    },
+    {
+      "body": {
+        "public_title": "string",
+        "require_totp_all": "boolean"
+      },
+      "content_type": "application/json",
+      "error": null,
+      "method": "GET",
+      "route": "/api/admin/settings",
+      "status": 200
+    },
+    {
+      "body": {
+        "error": "string",
+        "message": "string"
+      },
+      "content_type": "application/json",
+      "error": "forbidden",
+      "method": "GET",
+      "route": "/api/admin/settings",
+      "status": 403
+    },
+    {
+      "body": {
+        "public_title": "string",
+        "require_totp_all": "boolean"
+      },
+      "content_type": "application/json",
+      "error": null,
+      "method": "PATCH",
+      "route": "/api/admin/settings",
+      "status": 200
+    },
+    {
+      "body": {
+        "error": "string",
+        "message": "string"
+      },
+      "content_type": "application/json",
+      "error": "invalid_request",
+      "method": "PATCH",
+      "route": "/api/admin/settings",
+      "status": 400
+    },
+    {
+      "body": {
+        "apps": [
+          {
+            "active_installs": "number",
+            "checks": "number",
+            "downloads": "number",
+            "name": "string",
+            "slug": "string"
+          }
+        ],
+        "from": "string",
+        "to": "string"
+      },
+      "content_type": "application/json",
+      "error": null,
+      "method": "GET",
+      "route": "/api/admin/stats",
+      "status": 200
+    },
+    {
+      "body": [
+        {
+          "apps": [
+            "string"
+          ],
+          "created_at": "string",
+          "disabled": "boolean",
+          "email": "string",
+          "id": "number",
+          "last_login_at": {
+            "|": [
+              "null",
+              "string"
+            ]
+          },
+          "name": "string",
+          "role": "string",
+          "totp_enabled": "boolean"
+        }
+      ],
+      "content_type": "application/json",
+      "error": null,
+      "method": "GET",
+      "route": "/api/admin/users",
+      "status": 200
+    },
+    {
+      "body": {
+        "error": "string",
+        "message": "string"
+      },
+      "content_type": "application/json",
+      "error": "forbidden",
+      "method": "GET",
+      "route": "/api/admin/users",
+      "status": 403
+    },
+    {
+      "body": {
+        "invitation_url": "string",
+        "user": {
+          "apps": [],
+          "created_at": "string",
+          "disabled": "boolean",
+          "email": "string",
+          "id": "number",
+          "last_login_at": "null",
+          "name": "string",
+          "role": "string",
+          "totp_enabled": "boolean"
+        }
+      },
+      "content_type": "application/json",
+      "error": null,
+      "method": "POST",
+      "route": "/api/admin/users",
+      "status": 201
+    },
+    {
+      "body": {
+        "error": "string",
+        "message": "string"
+      },
+      "content_type": "application/json",
+      "error": "invalid_request",
+      "method": "POST",
+      "route": "/api/admin/users",
+      "status": 400
+    },
+    {
+      "body": {
+        "error": "string",
+        "message": "string"
+      },
+      "content_type": "application/json",
+      "error": "reauth_required",
+      "method": "POST",
+      "route": "/api/admin/users",
+      "status": 403
+    },
+    {
+      "body": {
+        "error": "string",
+        "message": "string"
+      },
+      "content_type": "application/json",
+      "error": "conflict",
+      "method": "POST",
+      "route": "/api/admin/users",
+      "status": 409
+    },
+    {
+      "body": null,
+      "content_type": null,
+      "error": null,
+      "method": "DELETE",
+      "route": "/api/admin/users/{id}",
+      "status": 204
+    },
+    {
+      "body": {
+        "error": "string",
+        "message": "string"
+      },
+      "content_type": "application/json",
+      "error": "conflict",
+      "method": "DELETE",
+      "route": "/api/admin/users/{id}",
+      "status": 409
+    },
+    {
+      "body": {
+        "apps": [
+          "string"
+        ],
+        "created_at": "string",
+        "disabled": "boolean",
+        "email": "string",
+        "id": "number",
+        "last_login_at": {
+          "|": [
+            "null",
+            "string"
+          ]
+        },
+        "name": "string",
+        "role": "string",
+        "totp_enabled": "boolean"
+      },
+      "content_type": "application/json",
+      "error": null,
+      "method": "PATCH",
+      "route": "/api/admin/users/{id}",
+      "status": 200
+    },
+    {
+      "body": {
+        "error": "string",
+        "message": "string"
+      },
+      "content_type": "application/json",
+      "error": "not_found",
+      "method": "PATCH",
+      "route": "/api/admin/users/{id}",
+      "status": 404
+    },
+    {
+      "body": {
+        "reset_url": "string"
+      },
+      "content_type": "application/json",
+      "error": null,
+      "method": "POST",
+      "route": "/api/admin/users/{id}/reset-link",
+      "status": 200
+    },
+    {
+      "body": null,
+      "content_type": null,
+      "error": null,
+      "method": "POST",
+      "route": "/api/admin/users/{id}/reset-totp",
+      "status": 204
+    }
+  ],
+  "format": 1
+}

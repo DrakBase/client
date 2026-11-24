@@ -1,0 +1,120 @@
+{
+  "cases": [
+    {
+      "expected": "ok",
+      "file": "stack/archives/minimal.stack.tar.gz",
+      "name": "minimale, écrite par archive::write"
+    },
+    {
+      "expected": "ok",
+      "file": "stack/archives/full.stack.tar.gz",
+      "name": "complète, écrite par archive::write"
+    },
+    {
+      "expected": "ok",
+      "file": "stack/archives/implicit-dirs.stack.tar.gz",
+      "name": "sans entrée de dossier pour files/"
+    },
+    {
+      "expected": "entry_missing",
+      "file": "stack/archives/missing-compose.stack.tar.gz",
+      "name": "sans compose.yaml"
+    },
+    {
+      "expected": "entry_type",
+      "file": "stack/archives/symlink.stack.tar.gz",
+      "name": "lien symbolique"
+    },
+    {
+      "expected": "entry_type",
+      "file": "stack/archives/hardlink.stack.tar.gz",
+      "name": "lien physique"
+    },
+    {
+      "expected": "entry_type",
+      "file": "stack/archives/device.stack.tar.gz",
+      "name": "périphérique"
+    },
+    {
+      "expected": "entry_path",
+      "file": "stack/archives/dotdot.stack.tar.gz",
+      "name": "chemin qui remonte"
+    },
+    {
+      "expected": "entry_path",
+      "file": "stack/archives/absolute.stack.tar.gz",
+      "name": "chemin absolu"
+    },
+    {
+      "expected": "entry_path",
+      "file": "stack/archives/dot-slash.stack.tar.gz",
+      "name": "chemin en ./"
+    },
+    {
+      "expected": "entry_path",
+      "file": "stack/archives/appledouble.stack.tar.gz",
+      "name": "fichier AppleDouble"
+    },
+    {
+      "expected": "entry_path",
+      "file": "stack/archives/backslash.stack.tar.gz",
+      "name": "barre oblique inverse"
+    },
+    {
+      "expected": "entry_path",
+      "file": "stack/archives/not-utf8.stack.tar.gz",
+      "name": "nom qui n'est pas de l'UTF-8"
+    },
+    {
+      "expected": "entry_unexpected",
+      "file": "stack/archives/readme.stack.tar.gz",
+      "name": "fichier inattendu à la racine"
+    },
+    {
+      "expected": "entry_unexpected",
+      "file": "stack/archives/files-as-file.stack.tar.gz",
+      "name": "files en fichier"
+    },
+    {
+      "expected": "entry_unexpected",
+      "file": "stack/archives/stack-json-dir.stack.tar.gz",
+      "name": "stack.json en dossier"
+    },
+    {
+      "expected": "entry_duplicate",
+      "file": "stack/archives/duplicate.stack.tar.gz",
+      "name": "compose.yaml deux fois"
+    },
+    {
+      "expected": "entry_duplicate",
+      "file": "stack/archives/file-then-dir.stack.tar.gz",
+      "name": "fichier puis dossier du même nom"
+    },
+    {
+      "expected": "ok",
+      "file": "stack/archives/max-entries.stack.tar.gz",
+      "name": "1000 entrées, la limite"
+    },
+    {
+      "expected": "archive_too_many_entries",
+      "file": "stack/archives/too-many.stack.tar.gz",
+      "name": "1001 entrées"
+    },
+    {
+      "expected": "archive_too_large",
+      "file": "stack/archives/too-large.stack.tar.gz",
+      "name": "plus de 16 Mio décompressée"
+    },
+    {
+      "expected": "archive_invalid",
+      "file": "stack/archives/not-gzip.stack.tar.gz",
+      "name": "pas du gzip"
+    },
+    {
+      "expected": "archive_invalid",
+      "file": "stack/archives/not-tar.stack.tar.gz",
+      "name": "gzip d'autre chose qu'un tar"
+    }
+  ],
+  "description": "Lecture des archives stack.tar.gz (docs/PROTOCOLE.md, « Archive stack.tar.gz »). expected : ok ou le code de StackError. Fichiers générés par gen_fixtures."
+}

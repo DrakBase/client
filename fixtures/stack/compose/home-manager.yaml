@@ -1,0 +1,20 @@
+# Stack proche de celle de Home Manager : réseau de l'hôte, volume nommé, sauvegarde avant mise à jour.
+services:
+  home-manager:
+    image: maj.example.fr/home-manager/home-manager@sha256:d812a9365b5761555d8517333f84fe8606f1f4ac82d37ac17476c55b902df23a
+    network_mode: host
+    restart: unless-stopped
+    environment:
+      HM_PORT: ${HM_PORT:-8123}
+      HM_READ_ONLY: ${HM_READ_ONLY:-0}
+      TZ: ${TZ:-Europe/Paris}
+    volumes:
+      - data:/data
+  backup:
+    image: maj.example.fr/home-manager/home-manager@sha256:d812a9365b5761555d8517333f84fe8606f1f4ac82d37ac17476c55b902df23a
+    profiles: [drakbase-hooks]
+    command: ["backup", "/data/backups"]
+    volumes:
+      - data:/data
+volumes:
+  data:

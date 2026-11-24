@@ -1,0 +1,30 @@
+# Ce qu'une stack peut demander à un autre conteneur de la machine, ou à Docker : chaque champ
+# donne une permission.
+services:
+  app:
+    image: maj.example.fr/demo/app@sha256:d812a9365b5761555d8517333f84fe8606f1f4ac82d37ac17476c55b902df23a
+    volumes_from:
+      - db:ro
+      - container:portainer:ro
+    pid: "container:traefik"
+    ipc: "service:db"
+    runtime: nvidia
+    gpus: all
+    post_start:
+      - command: ["true"]
+        privileged: true
+    volumes:
+      - journal:/journal
+  db:
+    image: postgres:17@sha256:4444444444444444444444444444444444444444444444444444444444444444
+    ipc: shareable
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: cdi
+              device_ids: ["fr.example/carte=0"]
+              capabilities: [gpu]
+volumes:
+  journal:
+    name: journal-commun

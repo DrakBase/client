@@ -1,0 +1,53 @@
+# Une stack qui demande de tout : chaque permission de docs/PROTOCOLE.md, « Compose ».
+services:
+  app:
+    image: maj.example.fr/demo/app@sha256:d812a9365b5761555d8517333f84fe8606f1f4ac82d37ac17476c55b902df23a
+    container_name: demo-app
+    network_mode: host
+    pid: host
+    cap_add: [NET_RAW, net_admin]
+    devices: ["/dev/ttyUSB0:/dev/ttyUSB0"]
+    device_cgroup_rules: ["c 188:* rmw"]
+    security_opt: ["seccomp=unconfined", "no-new-privileges:true"]
+    volumes:
+      - data:/data
+      - ./files/app.conf:/etc/app.conf:ro
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ${DATA_DIR:-/srv/demo}:/srv
+      - /etc/localtime:/etc/localtime:ro
+      - legacy:/legacy
+    configs:
+      - app-extra
+  web:
+    image: nginx:1.27@sha256:2222222222222222222222222222222222222222222222222222222222222222
+    privileged: true
+    ipc: host
+    ports: ["${PORT:-8080}:80", "127.0.0.1:9000:9000/udp"]
+    networks: [default, shared]
+  backup:
+    image: maj.example.fr/demo/app@sha256:d812a9365b5761555d8517333f84fe8606f1f4ac82d37ac17476c55b902df23a
+    profiles: [drakbase-hooks]
+    command: ["backup"]
+    volumes:
+      - data:/data
+      - nfs:/nfs
+configs:
+  app-extra:
+    file: /etc/demo/extra.conf
+  app-local:
+    file: ./files/local.conf
+volumes:
+  data:
+  legacy:
+    external: true
+    name: home-manager-data
+  nfs:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: /mnt/nas
+networks:
+  shared:
+    external: true
+    name: proxy

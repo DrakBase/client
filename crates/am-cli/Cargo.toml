@@ -1,0 +1,54 @@
+[package]
+name = "am-cli"
+description = "Outil drakbase : clés, empaquetage, signature, publication"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+publish.workspace = true
+
+[[bin]]
+name = "drakbase"
+path = "src/main.rs"
+
+[dependencies]
+# `signing` : l'outil est le seul à signer (crate minisign).
+am-protocol = { workspace = true, features = ["signing"] }
+anyhow.workspace = true
+bytes.workspace = true
+clap.workspace = true
+# Absent de [workspace.dependencies] : CFData, pour ranger le jeton dans le trousseau. C'est la
+# version qu'emploie déjà security-framework.
+core-foundation = "0.10"
+flate2.workspace = true
+futures-util.workspace = true
+hex.workspace = true
+indexmap.workspace = true
+minisign.workspace = true
+plist.workspace = true
+reqwest = { workspace = true, features = ["json", "stream", "rustls-no-provider"] }
+# Le générateur aléatoire du système, pour les mots de passe des clés.
+ring.workspace = true
+rpassword.workspace = true
+# Le fournisseur cryptographique ring pour rustls, à la place d'aws-lc-rs que reqwest prend par
+# défaut.
+rustls.workspace = true
+security-framework.workspace = true
+# La plage de versions de l'aide @drakbase/tauri, dans le package.json d'une app Tauri.
+semver.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+sha2.workspace = true
+tar.workspace = true
+tempfile.workspace = true
+time.workspace = true
+tokio.workspace = true
+# Couches des images d'une stack, recompressées en zstd niveau 19 (docs/PLAN.md, « Stacks Docker »).
+zstd.workspace = true
+
+[dev-dependencies]
+axum.workspace = true
+base64.workspace = true
+minisign-verify.workspace = true
+
+[lints]
+workspace = true

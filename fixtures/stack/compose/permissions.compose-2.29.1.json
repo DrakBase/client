@@ -1,0 +1,168 @@
+{
+  "configs": {
+    "app-extra": {
+      "name": "demo_app-extra",
+      "file": "/etc/demo/extra.conf"
+    }
+  },
+  "name": "demo",
+  "networks": {
+    "default": {
+      "name": "demo_default",
+      "ipam": {}
+    },
+    "shared": {
+      "name": "proxy",
+      "ipam": {},
+      "external": true
+    }
+  },
+  "services": {
+    "app": {
+      "cap_add": [
+        "NET_RAW",
+        "net_admin"
+      ],
+      "command": null,
+      "configs": [
+        {
+          "source": "app-extra"
+        }
+      ],
+      "container_name": "demo-app",
+      "device_cgroup_rules": [
+        "c 188:* rmw"
+      ],
+      "devices": [
+        "/dev/ttyUSB0:/dev/ttyUSB0"
+      ],
+      "entrypoint": null,
+      "image": "maj.example.fr/demo/app@sha256:d812a9365b5761555d8517333f84fe8606f1f4ac82d37ac17476c55b902df23a",
+      "network_mode": "host",
+      "pid": "host",
+      "security_opt": [
+        "seccomp=unconfined",
+        "no-new-privileges:true"
+      ],
+      "volumes": [
+        {
+          "type": "volume",
+          "source": "data",
+          "target": "/data",
+          "volume": {}
+        },
+        {
+          "type": "bind",
+          "source": "/srv/stack/files/app.conf",
+          "target": "/etc/app.conf",
+          "read_only": true,
+          "bind": {
+            "create_host_path": true
+          }
+        },
+        {
+          "type": "bind",
+          "source": "/var/run/docker.sock",
+          "target": "/var/run/docker.sock",
+          "bind": {
+            "create_host_path": true
+          }
+        },
+        {
+          "type": "bind",
+          "source": "/srv/demo-data",
+          "target": "/srv",
+          "bind": {
+            "create_host_path": true
+          }
+        },
+        {
+          "type": "bind",
+          "source": "/etc/localtime",
+          "target": "/etc/localtime",
+          "read_only": true,
+          "bind": {
+            "create_host_path": true
+          }
+        },
+        {
+          "type": "volume",
+          "source": "legacy",
+          "target": "/legacy",
+          "volume": {}
+        }
+      ]
+    },
+    "backup": {
+      "profiles": [
+        "drakbase-hooks"
+      ],
+      "command": [
+        "backup"
+      ],
+      "entrypoint": null,
+      "image": "maj.example.fr/demo/app@sha256:d812a9365b5761555d8517333f84fe8606f1f4ac82d37ac17476c55b902df23a",
+      "networks": {
+        "default": null
+      },
+      "volumes": [
+        {
+          "type": "volume",
+          "source": "data",
+          "target": "/data",
+          "volume": {}
+        },
+        {
+          "type": "volume",
+          "source": "nfs",
+          "target": "/nfs",
+          "volume": {}
+        }
+      ]
+    },
+    "web": {
+      "command": null,
+      "entrypoint": null,
+      "image": "nginx:1.27@sha256:2222222222222222222222222222222222222222222222222222222222222222",
+      "ipc": "host",
+      "networks": {
+        "default": null,
+        "shared": null
+      },
+      "ports": [
+        {
+          "mode": "ingress",
+          "target": 80,
+          "published": "9123",
+          "protocol": "tcp"
+        },
+        {
+          "mode": "ingress",
+          "host_ip": "127.0.0.1",
+          "target": 9000,
+          "published": "9000",
+          "protocol": "udp"
+        }
+      ],
+      "privileged": true
+    }
+  },
+  "volumes": {
+    "data": {
+      "name": "demo_data"
+    },
+    "legacy": {
+      "name": "home-manager-data",
+      "external": true
+    },
+    "nfs": {
+      "name": "demo_nfs",
+      "driver": "local",
+      "driver_opts": {
+        "device": "/mnt/nas",
+        "o": "bind",
+        "type": "none"
+      }
+    }
+  }
+}

@@ -1,0 +1,30 @@
+[package]
+name = "tauri-demo"
+version = "0.1.0"
+description = "App Tauri 2 d'exemple, mise à jour par DrakBase - Apps Market"
+edition = "2024"
+rust-version = "1.99"
+publish = false
+
+# Hors du workspace de la racine : l'app a ses propres dépendances et son propre Cargo.lock.
+[workspace]
+
+[build-dependencies]
+tauri-build = { version = "=2.7.4", features = [] }
+
+# Versions exactes : `requireSignedVersion` n'existe qu'à partir de tauri-plugin-updater 2.14, et
+# `tauri build` refuse un paquet npm d'une autre version mineure que sa crate.
+[dependencies]
+tauri = { version = "=2.12.5", features = [] }
+tauri-plugin-os = "=2.4.0"
+tauri-plugin-process = "=2.4.0"
+tauri-plugin-single-instance = "=2.5.4"
+tauri-plugin-store = "=2.5.0"
+tauri-plugin-updater = "=2.14.0"
+serde = { version = "1.0.229", features = ["derive"] }
+serde_json = "1.0.154"
+
+[profile.release]
+lto = "thin"
+codegen-units = 1
+strip = true

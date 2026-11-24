@@ -1,0 +1,8 @@
+{
+  "format": 1,
+  "app": "demo",
+  "version": "1.0.0",
+  "service": "app",
+  "public_keys": ["dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDcxODdCNDM1RjM3MTRGMDkKUldRSlQzSHpOYlNIY1h4YTd1OVp4VDhDQ3JKK1VhcHFJQVVLTEJSNVRJenVCSlFlV056RmJza1EK"],
+  "images": { "app": "sha256:d812a9365b5761555d8517333f84fe8606f1f4ac82d37ac17476c55b902df23a" }
+}

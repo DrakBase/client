@@ -1,0 +1,14 @@
+{
+  "$schema": "../gen/schemas/desktop-schema.json",
+  "identifier": "default",
+  "description": "Droits de la fenêtre principale : mises à jour, relance, réglages et mode d'essai",
+  "windows": ["main"],
+  "permissions": [
+    "core:default",
+    "updater:default",
+    "process:allow-restart",
+    "store:default",
+    "allow-launch-options",
+    "allow-journal"
+  ]
+}

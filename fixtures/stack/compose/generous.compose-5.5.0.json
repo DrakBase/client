@@ -1,0 +1,203 @@
+{
+  "configs": {
+    "reglages": {
+      "name": "demo_reglages",
+      "content": "mode = \"normal\"\n"
+    }
+  },
+  "name": "demo",
+  "networks": {
+    "interne": {
+      "name": "demo_interne",
+      "driver_opts": {
+        "com.docker.network.driver.mtu": "1400"
+      },
+      "ipam": {},
+      "internal": true
+    }
+  },
+  "secrets": {
+    "jeton": {
+      "name": "demo_jeton",
+      "environment": "HOME"
+    }
+  },
+  "services": {
+    "app": {
+      "cap_drop": [
+        "ALL"
+      ],
+      "command": [
+        "serve"
+      ],
+      "configs": [
+        {
+          "source": "reglages",
+          "target": "/etc/app/reglages.toml"
+        }
+      ],
+      "depends_on": {
+        "db": {
+          "condition": "service_healthy",
+          "required": true
+        }
+      },
+      "deploy": {
+        "resources": {},
+        "restart_policy": {
+          "condition": "on-failure"
+        },
+        "placement": {}
+      },
+      "dns": [
+        "1.1.1.1"
+      ],
+      "entrypoint": [
+        "/bin/app"
+      ],
+      "environment": {
+        "MODE": "normal"
+      },
+      "expose": [
+        "9000"
+      ],
+      "extra_hosts": [
+        "interne=10.0.0.5"
+      ],
+      "group_add": [
+        "1000"
+      ],
+      "hostname": "demo",
+      "healthcheck": {
+        "test": [
+          "CMD",
+          "wget",
+          "-q",
+          "-O-",
+          "http://127.0.0.1:9000/sante"
+        ],
+        "timeout": "5s",
+        "interval": "30s",
+        "retries": 3,
+        "start_period": "10s"
+      },
+      "image": "maj.example.fr/demo/app@sha256:d812a9365b5761555d8517333f84fe8606f1f4ac82d37ac17476c55b902df23a",
+      "init": true,
+      "labels": {
+        "fr.example.role": "app"
+      },
+      "logging": {
+        "driver": "json-file",
+        "options": {
+          "max-file": "3",
+          "max-size": "10m"
+        }
+      },
+      "mem_reservation": "134217728",
+      "networks": {
+        "interne": {
+          "aliases": [
+            "app"
+          ]
+        }
+      },
+      "oom_score_adj": 100,
+      "pids_limit": 200,
+      "read_only": true,
+      "restart": "unless-stopped",
+      "secrets": [
+        {
+          "source": "jeton",
+          "target": "/run/secrets/jeton"
+        }
+      ],
+      "security_opt": [
+        "no-new-privileges:true"
+      ],
+      "shm_size": "67108864",
+      "stop_grace_period": "20s",
+      "stop_signal": "SIGINT",
+      "sysctls": {
+        "net.core.somaxconn": "1024"
+      },
+      "tmpfs": [
+        "/tmp"
+      ],
+      "ulimits": {
+        "nofile": {
+          "soft": 1024,
+          "hard": 4096
+        }
+      },
+      "user": "1000:1000",
+      "volumes": [
+        {
+          "type": "volume",
+          "source": "data",
+          "target": "/data",
+          "volume": {}
+        },
+        {
+          "type": "tmpfs",
+          "target": "/run"
+        },
+        {
+          "type": "bind",
+          "source": "/srv/stack/files/app.conf",
+          "target": "/etc/app/app.conf",
+          "read_only": true,
+          "bind": {}
+        }
+      ],
+      "working_dir": "/srv/app"
+    },
+    "db": {
+      "command": null,
+      "entrypoint": null,
+      "healthcheck": {
+        "test": [
+          "CMD",
+          "pg_isready"
+        ]
+      },
+      "image": "postgres:17@sha256:4444444444444444444444444444444444444444444444444444444444444444",
+      "logging": {
+        "driver": "json-file",
+        "options": {
+          "max-file": "3",
+          "max-size": "10m"
+        }
+      },
+      "networks": {
+        "interne": null
+      },
+      "restart": "unless-stopped",
+      "volumes": [
+        {
+          "type": "volume",
+          "source": "base",
+          "target": "/var/lib/postgresql/data",
+          "volume": {}
+        }
+      ]
+    }
+  },
+  "volumes": {
+    "base": {
+      "name": "demo_base"
+    },
+    "data": {
+      "name": "demo_data",
+      "labels": {
+        "fr.example.role": "donnees"
+      }
+    }
+  },
+  "x-journal": {
+    "driver": "json-file",
+    "options": {
+      "max-file": "3",
+      "max-size": "10m"
+    }
+  }
+}

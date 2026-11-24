@@ -1,0 +1,66 @@
+{
+  "algorithm": "BLAKE2b-512",
+  "pattern": "l'octet i vaut i % 251",
+  "vectors": [
+    {
+      "digest": "ba80a53f981c4d0d6a2797b69f12f6e94c212f14685ac4b74b12bb6fdbffa2d17d87c5392aab792dc252d5de4533cc9518d38aa8dbf1925ab92386edd4009923",
+      "text": "abc"
+    },
+    {
+      "digest": "786a02f742015903c6c6fd852552d272912f4740e15847618a86e217f71f5419d25e1031afee585313896444934eb04b903a685b1448b755d56f701afe9be2ce",
+      "pattern_length": 0
+    },
+    {
+      "digest": "2fa3f686df876995167e7c2e5d74c4c7b6e48f8068fe0e44208344d480f7904c36963e44115fe3eb2a3ac8694c28bcb4f5a0f3276f2e79487d8219057a506e4b",
+      "pattern_length": 1
+    },
+    {
+      "digest": "d10bf9a15b1c9fc8d41f89bb140bf0be08d2f3666176d13baac4d381358ad074c9d4748c300520eb026daeaea7c5b158892fde4e8ec17dc998dcd507df26eb63",
+      "pattern_length": 63
+    },
+    {
+      "digest": "2fc6e69fa26a89a5ed269092cb9b2a449a4409a7a44011eecad13d7c4b0456602d402fa5844f1a7a758136ce3d5d8d0e8b86921ffff4f692dd95bdc8e5ff0052",
+      "pattern_length": 64
+    },
+    {
+      "digest": "fcbe8be7dcb49a32dbdf239459e26308b84dff1ea480df8d104eeff34b46fae98627b450c2267d48c0946a697c5b59531452ac0484f1c84e3a33d0c339bb2e28",
+      "pattern_length": 65
+    },
+    {
+      "digest": "b6292669ccd38d5f01caae96ba272c76a879a45743afa0725d83b9ebb26665b731f1848c52f11972b6644f554c064fa90780dbbbf3a89d4fc31f67df3e5857ef",
+      "pattern_length": 127
+    },
+    {
+      "digest": "2319e3789c47e2daa5fe807f61bec2a1a6537fa03f19ff32e87eecbfd64b7e0e8ccff439ac333b040f19b0c4ddd11a61e24ac1fe0f10a039806c5dcc0da3d115",
+      "pattern_length": 128
+    },
+    {
+      "digest": "f59711d44a031d5f97a9413c065d1e614c417ede998590325f49bad2fd444d3e4418be19aec4e11449ac1a57207898bc57d76a1bcf3566292c20c683a5c4648f",
+      "pattern_length": 129
+    },
+    {
+      "digest": "fe2c02da499516b0e9fb2dd70c49eb3629039f632e20a880946fb7bc97a7ab09deb7d48774d7f0648141c9d9ede19ae6e0dbf07863a128cf4b00195f0f179f74",
+      "pattern_length": 255
+    },
+    {
+      "digest": "93463ac058b6163eb43be3f5bb32b28541498f4e3366f1effe253ad44e1e076e41c3616046027c82a7124f8f4746668ad10b12e8e25a95ac8f3151df01cd5a93",
+      "pattern_length": 256
+    },
+    {
+      "digest": "9ca40e2ddee9436dbbd08efc65dbaf4870059f5eb3d76efd20241ae5bf13c60f250b882ea5c564838257a3fc95c496819ace2c6490b55b268535208dfc31822c",
+      "pattern_length": 257
+    },
+    {
+      "digest": "c11e1c0340bd7e5a1b275f1230c962fad215ecb1391486e74e31b960a2f2996381a5fad092da06841d5f26e38f6ecfeaf441acbcd1c2de61aef121e7927175f5",
+      "pattern_length": 1000
+    },
+    {
+      "digest": "c7a3d6a53bd11772ecf077c1dc9633a39c6fe691ec07a530e0e765c0a9d5a01a16f00995536578b83e54c2821766ac7ac6ae86e22269a5d14208ccac954cc95f",
+      "pattern_length": 4096
+    },
+    {
+      "digest": "17e60f0b76a810a5f7213fa8936fae7880289a4750651bd768f8dbaa3c8d6d44671f7c6feb32ff90e03b296134a1e6b762219532635ffa3ecb5fd4f60149810c",
+      "pattern_length": 65537
+    }
+  ]
+}

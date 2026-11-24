@@ -1,0 +1,77 @@
+{
+  "name": "home-manager",
+  "networks": {
+    "default": {
+      "name": "home-manager_default",
+      "ipam": {}
+    }
+  },
+  "services": {
+    "backup": {
+      "profiles": [
+        "drakbase-hooks"
+      ],
+      "command": [
+        "set -e; name=/backups/data-$$(date -u +%Y%m%dT%H%M%SZ).tar.gz; tar -czf \"$$name.part\" -C /data . \u0026\u0026 mv \"$$name.part\" \"$$name\"; ls -1t /backups/data-*.tar.gz | tail -n +6 | xargs -r rm -f; echo \"sauvegarde de /data : $$name\""
+      ],
+      "entrypoint": [
+        "/bin/sh",
+        "-c"
+      ],
+      "image": "updates.drakbase.com/home-manager/home-manager@sha256:1a376b213bb26b7f30391c6031ff72410b739666f17c18924f64b81a7f899b21",
+      "networks": {
+        "default": null
+      },
+      "volumes": [
+        {
+          "type": "volume",
+          "source": "data",
+          "target": "/data",
+          "read_only": true,
+          "volume": {}
+        },
+        {
+          "type": "volume",
+          "source": "backups",
+          "target": "/backups",
+          "volume": {}
+        }
+      ]
+    },
+    "home-manager": {
+      "command": null,
+      "entrypoint": null,
+      "environment": {
+        "HM_GID": "1000",
+        "HM_PORT": "8123",
+        "HM_READ_ONLY": "1",
+        "HM_UID": "1000",
+        "TZ": "Europe/Paris"
+      },
+      "image": "updates.drakbase.com/home-manager/home-manager@sha256:1a376b213bb26b7f30391c6031ff72410b739666f17c18924f64b81a7f899b21",
+      "mem_limit": "536870912",
+      "network_mode": "host",
+      "restart": "unless-stopped",
+      "security_opt": [
+        "no-new-privileges:true"
+      ],
+      "stop_grace_period": "30s",
+      "volumes": [
+        {
+          "type": "volume",
+          "source": "data",
+          "target": "/data",
+          "volume": {}
+        }
+      ]
+    }
+  },
+  "volumes": {
+    "backups": {
+      "name": "home-manager-backups"
+    },
+    "data": {
+      "name": "home-manager-data"
+    }
+  }
+}

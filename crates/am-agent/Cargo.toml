@@ -1,0 +1,42 @@
+[package]
+name = "am-agent"
+description = "Agent drakbase-stack : installe et met à jour les stacks Docker de DrakBase sur une machine Linux"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+publish.workspace = true
+build = "build.rs"
+
+[[bin]]
+name = "drakbase-stack"
+path = "src/main.rs"
+
+[dependencies]
+am-protocol.workspace = true
+anyhow.workspace = true
+clap.workspace = true
+hex.workspace = true
+# Les drapeaux d'ouverture O_NOFOLLOW, O_NONBLOCK et O_DIRECTORY : l'agent ne suit aucun lien dans
+# le dossier de contrôle, où l'app écrit.
+libc.workspace = true
+reqwest ={ workspace = true, features = ["rustls-no-provider"] }
+# Le générateur aléatoire du système, pour l'identifiant d'installation.
+ring.workspace = true
+rustls.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+sha2.workspace = true
+time.workspace = true
+tokio.workspace = true
+
+[build-dependencies]
+serde_json.workspace = true
+
+[dev-dependencies]
+# Les essais signent des versions avec les clés d'essai ; l'agent, lui, ne fait que vérifier.
+am-protocol = { workspace = true, features = ["signing"] }
+axum.workspace = true
+tempfile.workspace = true
+
+[lints]
+workspace = true

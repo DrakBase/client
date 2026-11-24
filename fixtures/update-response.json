@@ -1,0 +1,390 @@
+{
+  "description": "Corps de la réponse 200 de la vérification (docs/PROTOCOLE.md, « Vérification »). body : le JSON reçu. expected : ok si le client l'accepte, refused sinon. Pour ok, check donne la valeur lue de chaque champ, null pour notes et min_os_version absents ; version y est la forme canonique. Le serveur n'envoie que des versions canoniques : aucun cas ne porte sur une autre forme.",
+  "cases": [
+    {
+      "name": "complète",
+      "body": {
+        "version": "1.2.0",
+        "url": "https://maj.example.fr/dl/01JB8Z6T3KQ4N5V7W9X0Y1Z2A3/Translate-1.2.0.app.tar.gz",
+        "signature": "dW50cnVzdGVkIGNvbW1lbnQ6",
+        "notes": "- Correction du raccourci clavier",
+        "pub_date": "2026-10-24T13:05:00Z",
+        "size": 734243,
+        "sha256": "9f2c6f0e5d0a4b7f8c1d2e3f4a5b6c7d8e9f0a1b2c3d4e5f6a7b8c9d0e1f2a3b",
+        "min_os_version": "14.0",
+        "channel": "stable"
+      },
+      "expected": "ok",
+      "check": {
+        "version": "1.2.0",
+        "url": "https://maj.example.fr/dl/01JB8Z6T3KQ4N5V7W9X0Y1Z2A3/Translate-1.2.0.app.tar.gz",
+        "signature": "dW50cnVzdGVkIGNvbW1lbnQ6",
+        "notes": "- Correction du raccourci clavier",
+        "pub_date": "2026-10-24T13:05:00Z",
+        "size": 734243,
+        "sha256": "9f2c6f0e5d0a4b7f8c1d2e3f4a5b6c7d8e9f0a1b2c3d4e5f6a7b8c9d0e1f2a3b",
+        "min_os_version": "14.0",
+        "channel": "stable"
+      }
+    },
+    {
+      "name": "sans notes ni min_os_version",
+      "body": {
+        "version": "1.2.0",
+        "url": "https://maj.example.fr/dl/01JB8Z6T3KQ4N5V7W9X0Y1Z2A3/Translate-1.2.0.app.tar.gz",
+        "signature": "dW50cnVzdGVkIGNvbW1lbnQ6",
+        "pub_date": "2026-10-24T13:05:00Z",
+        "size": 734243,
+        "sha256": "9f2c6f0e5d0a4b7f8c1d2e3f4a5b6c7d8e9f0a1b2c3d4e5f6a7b8c9d0e1f2a3b",
+        "channel": "stable"
+      },
+      "expected": "ok",
+      "check": {
+        "version": "1.2.0",
+        "url": "https://maj.example.fr/dl/01JB8Z6T3KQ4N5V7W9X0Y1Z2A3/Translate-1.2.0.app.tar.gz",
+        "signature": "dW50cnVzdGVkIGNvbW1lbnQ6",
+        "notes": null,
+        "pub_date": "2026-10-24T13:05:00Z",
+        "size": 734243,
+        "sha256": "9f2c6f0e5d0a4b7f8c1d2e3f4a5b6c7d8e9f0a1b2c3d4e5f6a7b8c9d0e1f2a3b",
+        "min_os_version": null,
+        "channel": "stable"
+      }
+    },
+    {
+      "name": "notes et min_os_version nulles",
+      "body": {
+        "version": "1.2.0",
+        "url": "https://maj.example.fr/dl/01JB8Z6T3KQ4N5V7W9X0Y1Z2A3/Translate-1.2.0.app.tar.gz",
+        "signature": "dW50cnVzdGVkIGNvbW1lbnQ6",
+        "notes": null,
+        "pub_date": "2026-10-24T13:05:00Z",
+        "size": 734243,
+        "sha256": "9f2c6f0e5d0a4b7f8c1d2e3f4a5b6c7d8e9f0a1b2c3d4e5f6a7b8c9d0e1f2a3b",
+        "min_os_version": null,
+        "channel": "stable"
+      },
+      "expected": "ok",
+      "check": {
+        "version": "1.2.0",
+        "url": "https://maj.example.fr/dl/01JB8Z6T3KQ4N5V7W9X0Y1Z2A3/Translate-1.2.0.app.tar.gz",
+        "signature": "dW50cnVzdGVkIGNvbW1lbnQ6",
+        "notes": null,
+        "pub_date": "2026-10-24T13:05:00Z",
+        "size": 734243,
+        "sha256": "9f2c6f0e5d0a4b7f8c1d2e3f4a5b6c7d8e9f0a1b2c3d4e5f6a7b8c9d0e1f2a3b",
+        "min_os_version": null,
+        "channel": "stable"
+      }
+    },
+    {
+      "name": "bêta, pré-version",
+      "body": {
+        "version": "1.3.0-beta.2",
+        "url": "https://maj.example.fr/dl/01JB8Z6T3KQ4N5V7W9X0Y1Z2A3/Translate-1.2.0.app.tar.gz",
+        "signature": "dW50cnVzdGVkIGNvbW1lbnQ6",
+        "notes": "- Correction du raccourci clavier",
+        "pub_date": "2026-10-24T13:05:00Z",
+        "size": 734243,
+        "sha256": "9f2c6f0e5d0a4b7f8c1d2e3f4a5b6c7d8e9f0a1b2c3d4e5f6a7b8c9d0e1f2a3b",
+        "min_os_version": "14.0",
+        "channel": "beta"
+      },
+      "expected": "ok",
+      "check": {
+        "version": "1.3.0-beta.2",
+        "url": "https://maj.example.fr/dl/01JB8Z6T3KQ4N5V7W9X0Y1Z2A3/Translate-1.2.0.app.tar.gz",
+        "signature": "dW50cnVzdGVkIGNvbW1lbnQ6",
+        "notes": "- Correction du raccourci clavier",
+        "pub_date": "2026-10-24T13:05:00Z",
+        "size": 734243,
+        "sha256": "9f2c6f0e5d0a4b7f8c1d2e3f4a5b6c7d8e9f0a1b2c3d4e5f6a7b8c9d0e1f2a3b",
+        "min_os_version": "14.0",
+        "channel": "beta"
+      }
+    },
+    {
+      "name": "champ inconnu, ignoré",
+      "body": {
+        "version": "1.2.0",
+        "url": "https://maj.example.fr/dl/01JB8Z6T3KQ4N5V7W9X0Y1Z2A3/Translate-1.2.0.app.tar.gz",
+        "signature": "dW50cnVzdGVkIGNvbW1lbnQ6",
+        "notes": "- Correction du raccourci clavier",
+        "pub_date": "2026-10-24T13:05:00Z",
+        "size": 734243,
+        "sha256": "9f2c6f0e5d0a4b7f8c1d2e3f4a5b6c7d8e9f0a1b2c3d4e5f6a7b8c9d0e1f2a3b",
+        "min_os_version": "14.0",
+        "channel": "stable",
+        "critical": true,
+        "extra": {
+          "a": 1
+        }
+      },
+      "expected": "ok",
+      "check": {
+        "version": "1.2.0",
+        "url": "https://maj.example.fr/dl/01JB8Z6T3KQ4N5V7W9X0Y1Z2A3/Translate-1.2.0.app.tar.gz",
+        "signature": "dW50cnVzdGVkIGNvbW1lbnQ6",
+        "notes": "- Correction du raccourci clavier",
+        "pub_date": "2026-10-24T13:05:00Z",
+        "size": 734243,
+        "sha256": "9f2c6f0e5d0a4b7f8c1d2e3f4a5b6c7d8e9f0a1b2c3d4e5f6a7b8c9d0e1f2a3b",
+        "min_os_version": "14.0",
+        "channel": "stable"
+      }
+    },
+    {
+      "name": "notes vides et taille nulle",
+      "body": {
+        "version": "1.2.0",
+        "url": "https://maj.example.fr/dl/01JB8Z6T3KQ4N5V7W9X0Y1Z2A3/Translate-1.2.0.app.tar.gz",
+        "signature": "dW50cnVzdGVkIGNvbW1lbnQ6",
+        "notes": "",
+        "pub_date": "2026-10-24T13:05:00Z",
+        "size": 0,
+        "sha256": "9f2c6f0e5d0a4b7f8c1d2e3f4a5b6c7d8e9f0a1b2c3d4e5f6a7b8c9d0e1f2a3b",
+        "min_os_version": "14.0",
+        "channel": "stable"
+      },
+      "expected": "ok",
+      "check": {
+        "version": "1.2.0",
+        "url": "https://maj.example.fr/dl/01JB8Z6T3KQ4N5V7W9X0Y1Z2A3/Translate-1.2.0.app.tar.gz",
+        "signature": "dW50cnVzdGVkIGNvbW1lbnQ6",
+        "notes": "",
+        "pub_date": "2026-10-24T13:05:00Z",
+        "size": 0,
+        "sha256": "9f2c6f0e5d0a4b7f8c1d2e3f4a5b6c7d8e9f0a1b2c3d4e5f6a7b8c9d0e1f2a3b",
+        "min_os_version": "14.0",
+        "channel": "stable"
+      }
+    },
+    {
+      "name": "sans version",
+      "body": {
+        "url": "https://maj.example.fr/dl/01JB8Z6T3KQ4N5V7W9X0Y1Z2A3/Translate-1.2.0.app.tar.gz",
+        "signature": "dW50cnVzdGVkIGNvbW1lbnQ6",
+        "notes": "- Correction du raccourci clavier",
+        "pub_date": "2026-10-24T13:05:00Z",
+        "size": 734243,
+        "sha256": "9f2c6f0e5d0a4b7f8c1d2e3f4a5b6c7d8e9f0a1b2c3d4e5f6a7b8c9d0e1f2a3b",
+        "min_os_version": "14.0",
+        "channel": "stable"
+      },
+      "expected": "refused"
+    },
+    {
+      "name": "sans url",
+      "body": {
+        "version": "1.2.0",
+        "signature": "dW50cnVzdGVkIGNvbW1lbnQ6",
+        "notes": "- Correction du raccourci clavier",
+        "pub_date": "2026-10-24T13:05:00Z",
+        "size": 734243,
+        "sha256": "9f2c6f0e5d0a4b7f8c1d2e3f4a5b6c7d8e9f0a1b2c3d4e5f6a7b8c9d0e1f2a3b",
+        "min_os_version": "14.0",
+        "channel": "stable"
+      },
+      "expected": "refused"
+    },
+    {
+      "name": "sans signature",
+      "body": {
+        "version": "1.2.0",
+        "url": "https://maj.example.fr/dl/01JB8Z6T3KQ4N5V7W9X0Y1Z2A3/Translate-1.2.0.app.tar.gz",
+        "notes": "- Correction du raccourci clavier",
+        "pub_date": "2026-10-24T13:05:00Z",
+        "size": 734243,
+        "sha256": "9f2c6f0e5d0a4b7f8c1d2e3f4a5b6c7d8e9f0a1b2c3d4e5f6a7b8c9d0e1f2a3b",
+        "min_os_version": "14.0",
+        "channel": "stable"
+      },
+      "expected": "refused"
+    },
+    {
+      "name": "sans pub_date",
+      "body": {
+        "version": "1.2.0",
+        "url": "https://maj.example.fr/dl/01JB8Z6T3KQ4N5V7W9X0Y1Z2A3/Translate-1.2.0.app.tar.gz",
+        "signature": "dW50cnVzdGVkIGNvbW1lbnQ6",
+        "notes": "- Correction du raccourci clavier",
+        "size": 734243,
+        "sha256": "9f2c6f0e5d0a4b7f8c1d2e3f4a5b6c7d8e9f0a1b2c3d4e5f6a7b8c9d0e1f2a3b",
+        "min_os_version": "14.0",
+        "channel": "stable"
+      },
+      "expected": "refused"
+    },
+    {
+      "name": "sans size",
+      "body": {
+        "version": "1.2.0",
+        "url": "https://maj.example.fr/dl/01JB8Z6T3KQ4N5V7W9X0Y1Z2A3/Translate-1.2.0.app.tar.gz",
+        "signature": "dW50cnVzdGVkIGNvbW1lbnQ6",
+        "notes": "- Correction du raccourci clavier",
+        "pub_date": "2026-10-24T13:05:00Z",
+        "sha256": "9f2c6f0e5d0a4b7f8c1d2e3f4a5b6c7d8e9f0a1b2c3d4e5f6a7b8c9d0e1f2a3b",
+        "min_os_version": "14.0",
+        "channel": "stable"
+      },
+      "expected": "refused"
+    },
+    {
+      "name": "sans sha256",
+      "body": {
+        "version": "1.2.0",
+        "url": "https://maj.example.fr/dl/01JB8Z6T3KQ4N5V7W9X0Y1Z2A3/Translate-1.2.0.app.tar.gz",
+        "signature": "dW50cnVzdGVkIGNvbW1lbnQ6",
+        "notes": "- Correction du raccourci clavier",
+        "pub_date": "2026-10-24T13:05:00Z",
+        "size": 734243,
+        "min_os_version": "14.0",
+        "channel": "stable"
+      },
+      "expected": "refused"
+    },
+    {
+      "name": "sans channel",
+      "body": {
+        "version": "1.2.0",
+        "url": "https://maj.example.fr/dl/01JB8Z6T3KQ4N5V7W9X0Y1Z2A3/Translate-1.2.0.app.tar.gz",
+        "signature": "dW50cnVzdGVkIGNvbW1lbnQ6",
+        "notes": "- Correction du raccourci clavier",
+        "pub_date": "2026-10-24T13:05:00Z",
+        "size": 734243,
+        "sha256": "9f2c6f0e5d0a4b7f8c1d2e3f4a5b6c7d8e9f0a1b2c3d4e5f6a7b8c9d0e1f2a3b",
+        "min_os_version": "14.0"
+      },
+      "expected": "refused"
+    },
+    {
+      "name": "version illisible",
+      "body": {
+        "version": "latest",
+        "url": "https://maj.example.fr/dl/01JB8Z6T3KQ4N5V7W9X0Y1Z2A3/Translate-1.2.0.app.tar.gz",
+        "signature": "dW50cnVzdGVkIGNvbW1lbnQ6",
+        "notes": "- Correction du raccourci clavier",
+        "pub_date": "2026-10-24T13:05:00Z",
+        "size": 734243,
+        "sha256": "9f2c6f0e5d0a4b7f8c1d2e3f4a5b6c7d8e9f0a1b2c3d4e5f6a7b8c9d0e1f2a3b",
+        "min_os_version": "14.0",
+        "channel": "stable"
+      },
+      "expected": "refused"
+    },
+    {
+      "name": "version en nombre",
+      "body": {
+        "version": 1.2,
+        "url": "https://maj.example.fr/dl/01JB8Z6T3KQ4N5V7W9X0Y1Z2A3/Translate-1.2.0.app.tar.gz",
+        "signature": "dW50cnVzdGVkIGNvbW1lbnQ6",
+        "notes": "- Correction du raccourci clavier",
+        "pub_date": "2026-10-24T13:05:00Z",
+        "size": 734243,
+        "sha256": "9f2c6f0e5d0a4b7f8c1d2e3f4a5b6c7d8e9f0a1b2c3d4e5f6a7b8c9d0e1f2a3b",
+        "min_os_version": "14.0",
+        "channel": "stable"
+      },
+      "expected": "refused"
+    },
+    {
+      "name": "canal inconnu",
+      "body": {
+        "version": "1.2.0",
+        "url": "https://maj.example.fr/dl/01JB8Z6T3KQ4N5V7W9X0Y1Z2A3/Translate-1.2.0.app.tar.gz",
+        "signature": "dW50cnVzdGVkIGNvbW1lbnQ6",
+        "notes": "- Correction du raccourci clavier",
+        "pub_date": "2026-10-24T13:05:00Z",
+        "size": 734243,
+        "sha256": "9f2c6f0e5d0a4b7f8c1d2e3f4a5b6c7d8e9f0a1b2c3d4e5f6a7b8c9d0e1f2a3b",
+        "min_os_version": "14.0",
+        "channel": "nightly"
+      },
+      "expected": "refused"
+    },
+    {
+      "name": "taille négative",
+      "body": {
+        "version": "1.2.0",
+        "url": "https://maj.example.fr/dl/01JB8Z6T3KQ4N5V7W9X0Y1Z2A3/Translate-1.2.0.app.tar.gz",
+        "signature": "dW50cnVzdGVkIGNvbW1lbnQ6",
+        "notes": "- Correction du raccourci clavier",
+        "pub_date": "2026-10-24T13:05:00Z",
+        "size": -1,
+        "sha256": "9f2c6f0e5d0a4b7f8c1d2e3f4a5b6c7d8e9f0a1b2c3d4e5f6a7b8c9d0e1f2a3b",
+        "min_os_version": "14.0",
+        "channel": "stable"
+      },
+      "expected": "refused"
+    },
+    {
+      "name": "taille en texte",
+      "body": {
+        "version": "1.2.0",
+        "url": "https://maj.example.fr/dl/01JB8Z6T3KQ4N5V7W9X0Y1Z2A3/Translate-1.2.0.app.tar.gz",
+        "signature": "dW50cnVzdGVkIGNvbW1lbnQ6",
+        "notes": "- Correction du raccourci clavier",
+        "pub_date": "2026-10-24T13:05:00Z",
+        "size": "734243",
+        "sha256": "9f2c6f0e5d0a4b7f8c1d2e3f4a5b6c7d8e9f0a1b2c3d4e5f6a7b8c9d0e1f2a3b",
+        "min_os_version": "14.0",
+        "channel": "stable"
+      },
+      "expected": "refused"
+    },
+    {
+      "name": "taille décimale",
+      "body": {
+        "version": "1.2.0",
+        "url": "https://maj.example.fr/dl/01JB8Z6T3KQ4N5V7W9X0Y1Z2A3/Translate-1.2.0.app.tar.gz",
+        "signature": "dW50cnVzdGVkIGNvbW1lbnQ6",
+        "notes": "- Correction du raccourci clavier",
+        "pub_date": "2026-10-24T13:05:00Z",
+        "size": 1.5,
+        "sha256": "9f2c6f0e5d0a4b7f8c1d2e3f4a5b6c7d8e9f0a1b2c3d4e5f6a7b8c9d0e1f2a3b",
+        "min_os_version": "14.0",
+        "channel": "stable"
+      },
+      "expected": "refused"
+    },
+    {
+      "name": "signature en nombre",
+      "body": {
+        "version": "1.2.0",
+        "url": "https://maj.example.fr/dl/01JB8Z6T3KQ4N5V7W9X0Y1Z2A3/Translate-1.2.0.app.tar.gz",
+        "signature": 0,
+        "notes": "- Correction du raccourci clavier",
+        "pub_date": "2026-10-24T13:05:00Z",
+        "size": 734243,
+        "sha256": "9f2c6f0e5d0a4b7f8c1d2e3f4a5b6c7d8e9f0a1b2c3d4e5f6a7b8c9d0e1f2a3b",
+        "min_os_version": "14.0",
+        "channel": "stable"
+      },
+      "expected": "refused"
+    },
+    {
+      "name": "notes en liste",
+      "body": {
+        "version": "1.2.0",
+        "url": "https://maj.example.fr/dl/01JB8Z6T3KQ4N5V7W9X0Y1Z2A3/Translate-1.2.0.app.tar.gz",
+        "signature": "dW50cnVzdGVkIGNvbW1lbnQ6",
+        "notes": [
+          "a"
+        ],
+        "pub_date": "2026-10-24T13:05:00Z",
+        "size": 734243,
+        "sha256": "9f2c6f0e5d0a4b7f8c1d2e3f4a5b6c7d8e9f0a1b2c3d4e5f6a7b8c9d0e1f2a3b",
+        "min_os_version": "14.0",
+        "channel": "stable"
+      },
+      "expected": "refused"
+    },
+    {
+      "name": "pas un objet",
+      "body": [
+        "1.2.0"
+      ],
+      "expected": "refused"
+    }
+  ]
+}

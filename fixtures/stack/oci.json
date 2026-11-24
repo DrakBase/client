@@ -1,0 +1,150 @@
+{
+  "description": "Lecture des manifestes, index et configurations (docs/API.md, « Stacks Docker »). file : objet réel d'une image de Home Manager (essai S0), dans fixtures/, dont digest est l'empreinte ; document : objet écrit à la main, sérialisé tel quel. kind : manifest (avec content_type) ou config. expected : ok ou le code de StackError ; pour ok, les champs de check sont vérifiés.",
+  "cases": [
+    {
+      "name": "index réel arm64 et amd64",
+      "kind": "manifest", "content_type": "application/vnd.oci.image.index.v1+json",
+      "file": "stack/oci/hm-index.json", "digest": "sha256:d812a9365b5761555d8517333f84fe8606f1f4ac82d37ac17476c55b902df23a",
+      "expected": "ok",
+      "check": {
+        "platforms": ["linux/arm64", "linux/amd64"],
+        "references": [
+          ["manifest", "sha256:ce668cf8384e58da7ab708c2b85418cbda376444e6414e2eb41ae67d57811259"],
+          ["manifest", "sha256:82b63b25bf5b21f363bf6a4da3c02d1d849973d83d3241eb20886c84eec807f8"]
+        ]
+      }
+    },
+    {
+      "name": "manifeste réel arm64, couches gzip",
+      "kind": "manifest", "content_type": "application/vnd.oci.image.manifest.v1+json",
+      "file": "stack/oci/hm-arm64-manifest.json", "digest": "sha256:ce668cf8384e58da7ab708c2b85418cbda376444e6414e2eb41ae67d57811259",
+      "expected": "ok",
+      "check": {
+        "platforms": [],
+        "references": [
+          ["blob", "sha256:d50449486175d3ef4a53edda5ac8f3b706590477b897e1b275f82db7206994e1"],
+          ["blob", "sha256:d3531b7a4f217bdc3426c57bcff84c170f086f456a39689d4a615c6d026c4be0"],
+          ["blob", "sha256:af5eca97ee90c29dcb9451820e2108445d0ed4d210bdd82b2879e2b84be0a6e2"],
+          ["blob", "sha256:7964cb8f0b341eaf699e9a942c08c27960c0d1137ef24631f819a2c411af5f9a"]
+        ]
+      }
+    },
+    {
+      "name": "manifeste réel amd64",
+      "kind": "manifest", "content_type": "application/vnd.oci.image.manifest.v1+json",
+      "file": "stack/oci/hm-amd64-manifest.json", "digest": "sha256:82b63b25bf5b21f363bf6a4da3c02d1d849973d83d3241eb20886c84eec807f8",
+      "expected": "ok"
+    },
+    {
+      "name": "manifeste réel, couches zstd",
+      "kind": "manifest", "content_type": "application/vnd.oci.image.manifest.v1+json",
+      "file": "stack/oci/hm-zstd-manifest.json", "digest": "sha256:49b25eaa75f09d288a17d8656184d457dc348a879d43731f0e0845ff8a6c2692",
+      "expected": "ok"
+    },
+    {
+      "name": "configuration réelle arm64",
+      "kind": "config",
+      "file": "stack/oci/hm-arm64-config.json", "digest": "sha256:d50449486175d3ef4a53edda5ac8f3b706590477b897e1b275f82db7206994e1",
+      "expected": "ok",
+      "check": { "arch": "aarch64" }
+    },
+    {
+      "name": "Content-Type avec paramètre",
+      "kind": "manifest", "content_type": "application/vnd.oci.image.manifest.v1+json; charset=utf-8",
+      "file": "stack/oci/hm-arm64-manifest.json", "digest": "sha256:ce668cf8384e58da7ab708c2b85418cbda376444e6414e2eb41ae67d57811259",
+      "expected": "ok"
+    },
+    {
+      "name": "manifeste Docker v2, sans mediaType dans le corps",
+      "kind": "manifest", "content_type": "application/vnd.docker.distribution.manifest.v2+json",
+      "document": { "schemaVersion": 2,
+        "config": { "mediaType": "application/vnd.docker.container.image.v1+json", "digest": "sha256:1111111111111111111111111111111111111111111111111111111111111111", "size": 1469 },
+        "layers": [{ "mediaType": "application/vnd.docker.image.rootfs.diff.tar.gzip", "digest": "sha256:2222222222222222222222222222222222222222222222222222222222222222", "size": 3623807 }] },
+      "expected": "ok"
+    },
+    {
+      "name": "liste de manifestes Docker, arm/v7",
+      "kind": "manifest", "content_type": "application/vnd.docker.distribution.manifest.list.v2+json",
+      "document": { "schemaVersion": 2, "mediaType": "application/vnd.docker.distribution.manifest.list.v2+json",
+        "manifests": [{ "mediaType": "application/vnd.docker.distribution.manifest.v2+json", "digest": "sha256:3333333333333333333333333333333333333333333333333333333333333333", "size": 528, "platform": { "architecture": "arm", "os": "linux", "variant": "v7" } }] },
+      "expected": "ok",
+      "check": { "platforms": ["linux/arm/v7"] }
+    },
+    { "name": "type JSON ordinaire", "kind": "manifest", "content_type": "application/json", "file": "stack/oci/hm-index.json", "expected": "oci_media_type" },
+    { "name": "index envoyé comme manifeste", "kind": "manifest", "content_type": "application/vnd.oci.image.manifest.v1+json", "file": "stack/oci/hm-index.json", "expected": "oci_media_type_mismatch" },
+    { "name": "pas du JSON", "kind": "manifest", "content_type": "application/vnd.oci.image.manifest.v1+json", "raw": "<manifest/>", "expected": "oci_json_invalid" },
+    { "name": "schemaVersion 1", "kind": "manifest", "content_type": "application/vnd.oci.image.manifest.v1+json", "document": { "schemaVersion": 1, "config": {}, "layers": [] }, "expected": "oci_schema" },
+    {
+      "name": "index avec une attestation",
+      "kind": "manifest", "content_type": "application/vnd.oci.image.index.v1+json",
+      "document": { "schemaVersion": 2, "mediaType": "application/vnd.oci.image.index.v1+json", "manifests": [
+        { "mediaType": "application/vnd.oci.image.manifest.v1+json", "digest": "sha256:ce668cf8384e58da7ab708c2b85418cbda376444e6414e2eb41ae67d57811259", "size": 866, "platform": { "architecture": "arm64", "os": "linux" } },
+        { "mediaType": "application/vnd.oci.image.manifest.v1+json", "digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555", "size": 566, "platform": { "architecture": "unknown", "os": "unknown" } } ] },
+      "expected": "oci_platform"
+    },
+    {
+      "name": "index sans plateforme",
+      "kind": "manifest", "content_type": "application/vnd.oci.image.index.v1+json",
+      "document": { "schemaVersion": 2, "manifests": [{ "mediaType": "application/vnd.oci.image.manifest.v1+json", "digest": "sha256:ce668cf8384e58da7ab708c2b85418cbda376444e6414e2eb41ae67d57811259", "size": 866 }] },
+      "expected": "oci_platform"
+    },
+    {
+      "name": "index avec deux fois arm64",
+      "kind": "manifest", "content_type": "application/vnd.oci.image.index.v1+json",
+      "document": { "schemaVersion": 2, "manifests": [
+        { "mediaType": "application/vnd.oci.image.manifest.v1+json", "digest": "sha256:ce668cf8384e58da7ab708c2b85418cbda376444e6414e2eb41ae67d57811259", "size": 866, "platform": { "architecture": "arm64", "os": "linux" } },
+        { "mediaType": "application/vnd.oci.image.manifest.v1+json", "digest": "sha256:82b63b25bf5b21f363bf6a4da3c02d1d849973d83d3241eb20886c84eec807f8", "size": 866, "platform": { "architecture": "arm64", "os": "linux", "variant": "v8" } } ] },
+      "expected": "oci_platform_duplicate"
+    },
+    {
+      "name": "index qui désigne un index",
+      "kind": "manifest", "content_type": "application/vnd.oci.image.index.v1+json",
+      "document": { "schemaVersion": 2, "manifests": [{ "mediaType": "application/vnd.oci.image.index.v1+json", "digest": "sha256:d812a9365b5761555d8517333f84fe8606f1f4ac82d37ac17476c55b902df23a", "size": 645, "platform": { "architecture": "arm64", "os": "linux" } }] },
+      "expected": "oci_child_type"
+    },
+    { "name": "index vide", "kind": "manifest", "content_type": "application/vnd.oci.image.index.v1+json", "document": { "schemaVersion": 2, "manifests": [] }, "expected": "oci_json_invalid" },
+    {
+      "name": "couche étrangère Docker",
+      "kind": "manifest", "content_type": "application/vnd.docker.distribution.manifest.v2+json",
+      "document": { "schemaVersion": 2, "config": { "mediaType": "application/vnd.docker.container.image.v1+json", "digest": "sha256:1111111111111111111111111111111111111111111111111111111111111111", "size": 1 },
+        "layers": [{ "mediaType": "application/vnd.docker.image.rootfs.foreign.diff.tar.gzip", "digest": "sha256:2222222222222222222222222222222222222222222222222222222222222222", "size": 1, "urls": ["https://mcr.microsoft.com/v2/x"] }] },
+      "expected": "oci_foreign_layer"
+    },
+    {
+      "name": "couche hébergée ailleurs (urls)",
+      "kind": "manifest", "content_type": "application/vnd.oci.image.manifest.v1+json",
+      "document": { "schemaVersion": 2, "config": { "mediaType": "application/vnd.oci.image.config.v1+json", "digest": "sha256:1111111111111111111111111111111111111111111111111111111111111111", "size": 1 },
+        "layers": [{ "mediaType": "application/vnd.oci.image.layer.v1.tar+gzip", "digest": "sha256:2222222222222222222222222222222222222222222222222222222222222222", "size": 1, "urls": ["https://example.com/layer"] }] },
+      "expected": "oci_foreign_layer"
+    },
+    {
+      "name": "couche à distribution restreinte",
+      "kind": "manifest", "content_type": "application/vnd.oci.image.manifest.v1+json",
+      "document": { "schemaVersion": 2, "config": { "mediaType": "application/vnd.oci.image.config.v1+json", "digest": "sha256:1111111111111111111111111111111111111111111111111111111111111111", "size": 1 },
+        "layers": [{ "mediaType": "application/vnd.oci.image.layer.nondistributable.v1.tar+gzip", "digest": "sha256:2222222222222222222222222222222222222222222222222222222222222222", "size": 1 }] },
+      "expected": "oci_foreign_layer"
+    },
+    {
+      "name": "couche en bzip2",
+      "kind": "manifest", "content_type": "application/vnd.oci.image.manifest.v1+json",
+      "document": { "schemaVersion": 2, "config": { "mediaType": "application/vnd.oci.image.config.v1+json", "digest": "sha256:1111111111111111111111111111111111111111111111111111111111111111", "size": 1 },
+        "layers": [{ "mediaType": "application/vnd.oci.image.layer.v1.tar+bzip2", "digest": "sha256:2222222222222222222222222222222222222222222222222222222222222222", "size": 1 }] },
+      "expected": "oci_layer_type"
+    },
+    {
+      "name": "artefact qui n'est pas une image",
+      "kind": "manifest", "content_type": "application/vnd.oci.image.manifest.v1+json",
+      "document": { "schemaVersion": 2, "config": { "mediaType": "application/vnd.cncf.helm.config.v1+json", "digest": "sha256:1111111111111111111111111111111111111111111111111111111111111111", "size": 1 }, "layers": [] },
+      "expected": "oci_media_type"
+    },
+    {
+      "name": "empreinte illisible dans un descripteur",
+      "kind": "manifest", "content_type": "application/vnd.oci.image.manifest.v1+json",
+      "document": { "schemaVersion": 2, "config": { "mediaType": "application/vnd.oci.image.config.v1+json", "digest": "sha256:1111", "size": 1 }, "layers": [] },
+      "expected": "digest_invalid"
+    },
+    { "name": "configuration arm/v6", "kind": "config", "document": { "os": "linux", "architecture": "arm", "variant": "v6" }, "expected": "oci_platform" },
+    { "name": "configuration Windows", "kind": "config", "document": { "os": "windows", "architecture": "amd64" }, "expected": "oci_platform" },
+    { "name": "configuration arm64/v8", "kind": "config", "document": { "os": "linux", "architecture": "arm64", "variant": "v8" }, "expected": "ok", "check": { "arch": "aarch64" } }
+  ]
+}
