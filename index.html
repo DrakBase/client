@@ -1,0 +1,1486 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Guide des développeurs DrakBase</title>
+<meta name="description" content="Brancher une app macOS en Swift, une app Tauri ou une stack Docker sur DrakBase, et y publier ses versions.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🚇</text></svg>">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&amp;family=JetBrains+Mono:wght@400;500;600;700&amp;display=swap">
+<style>
+/* ==========================================================================
+   Ligne de métro : carrelage blanc, enseignes noires à filet blanc, Archivo
+   étroit pour les titres, une ligne jaune pour les parcours, cartes grises
+   arrondies. Les rôles du récit (truth, runtime…) gardent leur sens et
+   prennent les couleurs du plan de métro. Aucune valeur hexadécimale sous ce
+   bloc, sauf l'afficheur qui porte sa propre surface.
+   ========================================================================== */
+:root{
+  color-scheme: light;
+
+  /* surfaces et encre */
+  --bg:#ffffff; --panel:#ffffff; --mist:#f5f5f7;
+  --ink:#1d1d1f; --ink-2:#424245; --muted:#6e6e73;
+  --line:rgba(29,29,31,.09); --line-strong:rgba(29,29,31,.18);
+  --tile-img:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='56' height='56' viewBox='0 0 56 56'%3E%3Cpath d='M0 .5H56M0 28.5H56M.5 0V28M28.5 28V56' stroke='%231d1d1f' stroke-opacity='.075' fill='none'/%3E%3C/svg%3E");
+
+  /* enseigne, ligne et afficheur */
+  --plaque:#181819; --plaque-ink:#ffffff; --plaque-edge:transparent;
+  --metro:#ffce00; --on-metro:#1d1d1f;
+  /* matières des objets dessinés */
+  --alu-1:#f3f4f7; --alu-2:#c8ccd4; --alu-edge:#a3a8b2; --shackle:#8c919b; --groove:#aeb3bc;
+  --screen-1:#24252c; --screen-2:#0f1013; --glare:rgba(255,255,255,.07); --term-ok:#6fdc96;
+  --brass-1:#ffe27a; --brass-2:#e2a200; --brass-edge:#9a6f00; --shine:rgba(255,255,255,.6);
+  --lock-1:#4b4d55; --lock-2:#1e1f23;
+  --kraft-top:#e7bb83; --kraft-front:#d29f62; --kraft-side:#b47d43; --kraft-edge:#8a5a2b;
+  --wax-1:#ea5a52; --wax-2:#9b1c18; --wax-ink:#ffe1dc;
+  --ticket-1:#fff7d6; --ticket-2:#ffd64a; --stripe:#5b3b17; --paper:#ffffff;
+  --rack-1:#ffffff; --rack-2:#e8eaef; --drawer-1:#f7f8fa; --drawer-2:#e4e6eb;
+  --window-1:#ffffff; --window-2:#f2f3f6; --ok-1:#43d277; --ok-2:#1d8a46;
+  --tl-red:#ff5f57; --tl-yellow:#febc2e; --tl-green:#28c840;
+  --cube-left:#181819; --cube-right:#34343a;
+  --shadow-c:rgba(20,20,30,.28); --stage:#f5f5f7;
+  --eink-frame:#2a2a2d; --eink-bg:#e7e6e1; --eink-ink:#1d1d1f; --eink-dim:#6b6a66;
+  --term-bg:#18181a; --term-ink:#f2f2f4;
+
+  /* rôles du récit, aux couleurs du plan */
+  --truth:#2f6fd6; --runtime:#2c8a48; --moved:#c26a10; --dropped:#c4302b;
+  /* Annotations de l'auteur — PAS des rôles du récit : elles disent ce que
+     l'auteur ajoute par-dessus les faits. Violet conseille, ambre prévient. */
+  --suggest:#5b52c9; --caution:#9a6206; --ai:#8f2bb0;
+
+  /* type */
+  --sans: "Archivo", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+
+  /* géométrie */
+  --r-sm:.5rem; --r-md:.75rem; --r-lg:1rem; --r-xl:1.75rem;
+  --gutter:max(clamp(16px, 4vw, 32px), env(safe-area-inset-left, 0px));
+  --gutter-r:max(clamp(16px, 4vw, 32px), env(safe-area-inset-right, 0px));
+}
+
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    color-scheme: dark;
+    --bg:#0f0f11; --panel:#17171a; --mist:#1d1d21;
+    --ink:#f2f2f4; --ink-2:#c9c9ce; --muted:#9a9aa0;
+    --line:rgba(255,255,255,.09); --line-strong:rgba(255,255,255,.18);
+    --tile-img:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='56' height='56' viewBox='0 0 56 56'%3E%3Cpath d='M0 .5H56M0 28.5H56M.5 0V28M28.5 28V56' stroke='%23ffffff' stroke-opacity='.06' fill='none'/%3E%3C/svg%3E");
+    --plaque:#0a0a0b; --plaque-ink:#ffffff; --plaque-edge:rgba(255,255,255,.22);
+    --term-bg:#0a0a0b; --term-ink:#f2f2f4;
+    --alu-1:#5d606a; --alu-2:#34363d; --alu-edge:#767a85; --groove:#2a2c31; --rack-1:#2c2d33; --rack-2:#1c1d21; --drawer-1:#35363d; --drawer-2:#26272c; --window-1:#27282d; --window-2:#1d1e22; --shadow-c:rgba(0,0,0,.7); --stage:#18181b; --paper:#f4f1ea;
+    --truth:#79a8ff; --runtime:#5fcf86; --moved:#ffb15a; --dropped:#ff8a80;
+    --suggest:#a9a0ff; --caution:#e9b567; --ai:#e0a3f2;
+  }
+}
+/* Dupliqué exprès : ce bloc laisse forcer le sombre sur un système clair, le
+   :not([data-theme="light"]) ci-dessus laisse forcer le clair sur un système
+   sombre. Ne pas factoriser les deux blocs. */
+:root[data-theme="dark"]{
+  color-scheme: dark;
+  --bg:#0f0f11; --panel:#17171a; --mist:#1d1d21;
+  --ink:#f2f2f4; --ink-2:#c9c9ce; --muted:#9a9aa0;
+  --line:rgba(255,255,255,.09); --line-strong:rgba(255,255,255,.18);
+  --tile-img:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='56' height='56' viewBox='0 0 56 56'%3E%3Cpath d='M0 .5H56M0 28.5H56M.5 0V28M28.5 28V56' stroke='%23ffffff' stroke-opacity='.06' fill='none'/%3E%3C/svg%3E");
+  --plaque:#0a0a0b; --plaque-ink:#ffffff; --plaque-edge:rgba(255,255,255,.22);
+  --term-bg:#0a0a0b; --term-ink:#f2f2f4;
+  --alu-1:#5d606a; --alu-2:#34363d; --alu-edge:#767a85; --groove:#2a2c31; --rack-1:#2c2d33; --rack-2:#1c1d21; --drawer-1:#35363d; --drawer-2:#26272c; --window-1:#27282d; --window-2:#1d1e22; --shadow-c:rgba(0,0,0,.7); --stage:#18181b; --paper:#f4f1ea;
+  --truth:#79a8ff; --runtime:#5fcf86; --moved:#ffb15a; --dropped:#ff8a80;
+  --suggest:#a9a0ff; --caution:#e9b567; --ai:#e0a3f2;
+}
+
+/* ========================================================================== */
+*,*::before,*::after{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%; scroll-padding-top:5.5rem}
+body{margin:0; font-family:var(--sans); font-size:17px; line-height:1.58;
+  color:var(--ink); background:var(--bg); -webkit-font-smoothing:antialiased}
+body::before{content:""; position:fixed; inset:0 0 auto; height:env(safe-area-inset-top, 0px);
+  z-index:41; background:var(--bg)}
+.wrap{max-width:72rem; margin:0 auto; padding-left:var(--gutter); padding-right:var(--gutter-r);
+  padding-block:0 4rem}
+p{margin:0 0 .85rem; text-wrap:pretty; max-width:72ch}
+h1,h2,h3,h4{text-wrap:balance; margin:0; line-height:1.12}
+ul{margin:0; padding-left:1.15rem}
+li{margin:.3rem 0}
+code{font-family:var(--mono); font-variant-ligatures:none; font-size:.82em; background:var(--mist);
+  border:1px solid var(--line); border-radius:.3rem; padding:.06em .32em; overflow-wrap:anywhere}
+a{color:inherit}
+:focus-visible{outline:2px solid var(--truth); outline-offset:2px; border-radius:4px}
+@media (prefers-reduced-motion: reduce){
+  *,*::before,*::after{animation-duration:.01ms !important; animation-iteration-count:1 !important;
+    transition-duration:.01ms !important; scroll-behavior:auto !important}
+}
+
+/* titres étroits, comme les enseignes */
+.narrow{font-stretch:82%}
+.eyebrow{font-family:var(--mono); font-size:.72rem; text-transform:uppercase;
+  letter-spacing:.14em; color:var(--muted); margin:0 0 .6rem}
+
+/* nom court : le style du logotype, en petit — texte étroit et gras, souligné d'un trait jaune */
+.plaque{display:inline-block; margin:0; font-family:var(--sans); font-stretch:82%; font-weight:800;
+  letter-spacing:-.02em; line-height:1; color:var(--ink)}
+.plaque::after{content:""; display:block; width:1.6em; height:max(3px, .16em); margin-top:.28em;
+  border-radius:2px; background:var(--metro)}
+.plaque-sm{font-size:1.12rem}
+/* logotype de la première page : le nom seul, en grand, souligné d'un trait de ligne jaune */
+.wordmark{margin:0; font-stretch:82%; font-weight:800; font-size:clamp(3rem, 8vw, 5.2rem); line-height:.95;
+  letter-spacing:-.035em; color:var(--ink)}
+.wordmark::after{content:""; display:block; width:3.4rem; height:6px; margin-top:.7rem; border-radius:3px;
+  background:var(--metro)}
+
+/* barre du haut : enseigne, volets, commandes -------------------------------- */
+.tabs-sentinel{display:block; height:0}
+.topbar{position:sticky; top:env(safe-area-inset-top, 0px); z-index:40;
+  background:color-mix(in oklab, var(--bg) 80%, transparent);
+  -webkit-backdrop-filter:blur(14px) saturate(1.4); backdrop-filter:blur(14px) saturate(1.4);
+  border-bottom:1px solid var(--line)}
+.topbar-in{max-width:72rem; margin:0 auto; padding:.55rem var(--gutter-r) .55rem var(--gutter);
+  display:flex; flex-wrap:wrap; align-items:center; gap:.6rem 1.5rem}
+.tabs{display:flex; flex-wrap:wrap; gap:.2rem 1.4rem; margin:0 auto 0 0}
+.tab{font-family:var(--sans); font-size:.92rem; font-weight:500; color:var(--muted);
+  background:none; border:0; border-radius:0; padding:.55rem 0; cursor:pointer;
+  box-shadow:inset 0 -2px 0 transparent; transition:color .15s, box-shadow .15s}
+.tab:hover{color:var(--ink)}
+.tab[aria-selected="true"]{color:var(--ink); box-shadow:inset 0 -2px 0 var(--ink)}
+.tab-num{font-family:var(--mono); font-size:.72rem; opacity:.6; margin-right:.45rem}
+.head-tools{display:flex; gap:.45rem; align-items:center; flex-wrap:wrap; justify-content:flex-end}
+.theme-toggle,.notes-toggle{font-family:var(--sans); font-size:.78rem; font-weight:600;
+  border-radius:var(--r-sm); padding:.42rem .8rem; cursor:pointer; transition:background .15s, color .15s}
+.theme-toggle{color:var(--plaque-ink); background:var(--plaque); border:1px solid var(--plaque-edge)}
+.theme-toggle:hover{opacity:.88}
+.notes-toggle{color:var(--ink); background:transparent; border:1px solid var(--line-strong)}
+.notes-toggle:hover{border-color:var(--ink)}
+.section-head .notes-toggle{margin-left:auto; font-size:.72rem; padding:.3rem .65rem}
+
+/* première page : carrelage et afficheur ------------------------------------ */
+.hero{background:linear-gradient(to bottom, transparent 55%, var(--bg)), var(--tile-img) 0 0 / 56px 56px, var(--bg);
+  border-bottom:1px solid var(--line)}
+.hero-in{max-width:72rem; margin:0 auto; padding:clamp(3rem,9vw,6.5rem) var(--gutter-r) clamp(2.6rem,6vw,4.5rem) var(--gutter);
+  display:grid; grid-template-columns:minmax(0,1.15fr) minmax(0,.85fr); gap:2.5rem; align-items:center}
+.hero-text > * + *{margin-top:1.1rem}
+.hero h1{font-size:clamp(1.6rem,3.3vw,2.3rem); font-weight:800; letter-spacing:-.02em; max-width:22ch}
+.dek{color:var(--muted); font-size:1.08rem; max-width:52ch; margin:0}
+.hero-cta{display:flex; flex-wrap:wrap; gap:.6rem}
+.btn{display:inline-block; font-size:.92rem; font-weight:600; text-decoration:none;
+  border-radius:var(--r-sm); padding:.68rem 1.05rem; color:var(--plaque-ink); background:var(--plaque);
+  border:1px solid var(--plaque-edge)}
+.btn:hover{opacity:.88}
+.btn.is-ghost{color:var(--ink); background:var(--panel); border-color:var(--line-strong)}
+.btn.is-ghost:hover{border-color:var(--ink); opacity:1}
+
+/* version de l'outil : du texte sobre, sans forme autour */
+.version-tag{display:flex; flex-direction:column; align-items:flex-start; gap:.35rem}
+.version-label{margin:0; font-family:var(--mono); font-size:.7rem; text-transform:uppercase;
+  letter-spacing:.14em; color:var(--muted)}
+.version-row{display:flex; align-items:center; gap:.7rem}
+.version-num{font-stretch:82%; font-weight:800; font-size:clamp(2.4rem, 5vw, 3.2rem); line-height:1;
+  letter-spacing:-.03em; color:var(--ink)}
+
+/* contrainte transverse : l'encadré « Attention » --------------------------- */
+.banner{margin:clamp(2.2rem,5vw,3.5rem) auto 0; max-width:46rem; padding:clamp(1.4rem,4vw,2.4rem);
+  border:3px solid var(--ink); border-radius:var(--r-xl); background:var(--panel)}
+.banner-head{display:flex; align-items:center; gap:.7rem; margin:0 0 .7rem}
+.banner-head svg{flex:none; width:2.1rem; height:2.1rem}
+.banner-head .tri{fill:var(--metro); stroke:var(--ink)}
+.banner-head .tri-mark{fill:none; stroke:var(--ink)}
+.banner-head .tri-dot{fill:var(--ink)}
+.display-fig{margin:0; justify-self:center}
+.banner-head h2{font-size:clamp(1.5rem,3.4vw,2.1rem); font-stretch:82%; font-weight:800; letter-spacing:-.015em}
+.banner .eyebrow{margin:0 0 .5rem}
+.banner p{margin:0; color:var(--ink-2); max-width:none}
+
+/* volets ------------------------------------------------------------------ */
+.volet[hidden]{display:none}
+.volet-head{padding:clamp(3rem,7vw,5rem) 0 0}
+.volet-head h2{font-size:clamp(2.4rem,6.5vw,4.4rem); font-stretch:82%; font-weight:800; letter-spacing:-.025em; line-height:.98}
+.volet-head p{margin:.9rem 0 0; color:var(--ink-2); font-size:1.08rem; max-width:62ch}
+.volet-head .eyebrow{margin:0 0 .8rem}
+
+/* section : une bande sur deux, grise et pleine largeur --------------------- */
+.section{--card:var(--mist); --tile:var(--panel); padding-block:clamp(2.4rem,5vw,3.75rem); margin:0; scroll-margin-top:5rem}
+.volet > .section:nth-of-type(even){--card:var(--panel); --tile:var(--mist); background:var(--mist);
+  border-image:conic-gradient(var(--mist) 0 0) fill 0 / / 0 100vmax}
+.section-head{display:flex; flex-wrap:wrap; gap:.75rem 1rem; align-items:center; margin-bottom:1rem}
+/* numéro de section : une petite enseigne. N'existe que si l'ordre est réel. */
+.section-num{flex:0 0 auto; font-family:var(--sans); font-stretch:82%; font-size:1.05rem; font-weight:800;
+  color:var(--ink); line-height:1}
+.section-num::after{content:""; display:block; width:100%; min-width:1.2rem; height:4px; margin-top:.25rem;
+  border-radius:2px; background:var(--metro)}
+.section-head h2,.section-head h3{font-size:clamp(1.6rem,3.6vw,2.35rem); font-stretch:82%; font-weight:800; letter-spacing:-.02em}
+.section-note{color:var(--muted); font-size:1rem; margin:-.2rem 0 1.2rem}
+.section:target > .section-head h3{text-decoration:underline; text-decoration-color:var(--metro); text-decoration-thickness:4px; text-underline-offset:6px}
+
+/* Deux blocs frères d'une section ne se touchent JAMAIS. Aucun conteneur de
+   composant ne déclare de marge haute : c'est la section qui espace ses
+   blocs (design-system.md §1). */
+.section > * + *{margin-top:1.4rem}
+.section > h4{margin-top:2.4rem; font-size:1.3rem; font-stretch:82%; font-weight:800; letter-spacing:-.01em}
+.section > h4 + p, .section > h4 + .card, .section > h4 + .mechs{margin-top:.6rem}
+.section > pre.cmd{margin-top:1.3rem}
+.section > h4 + pre.cmd{margin-top:1.1rem}
+.section > p + p{margin-top:0}
+.section > .note + .note{margin-top:.6rem}
+.section > .legend{margin-top:.9rem}
+.section-head + *, .section-note + *{margin-top:0}
+
+/* cartes grises arrondies ---------------------------------------------------- */
+.card{background:var(--card); border-radius:var(--r-lg); padding:1.15rem 1.25rem}
+.scroll-x{overflow-x:auto; overscroll-behavior-x:contain}
+
+/* commandes à copier : un petit terminal noir */
+pre.cmd{margin:0; font-family:var(--mono); font-variant-ligatures:none; font-size:.8rem; line-height:1.6;
+  color:var(--term-ink); background:var(--term-bg); border-radius:var(--r-md);
+  padding:.85rem 1rem; overflow-x:auto; overscroll-behavior-x:contain; white-space:pre; max-width:100%;
+  border:1px solid var(--plaque-edge)}
+
+/* tableaux larges : bouton injecté par le script */
+.table-tools{display:flex; justify-content:flex-end; align-items:center; gap:.5rem; margin:0 0 .3rem}
+@media (max-width:760px){.table-tools{display:none}}
+.table-expand{font-family:var(--sans); font-size:.74rem; font-weight:600; color:var(--muted);
+  background:transparent; border:1px solid var(--line-strong); border-radius:999px;
+  padding:.2rem .6rem; cursor:pointer; display:inline-flex; align-items:center; gap:.35rem}
+.table-expand:hover{color:var(--ink); border-color:var(--ink)}
+.card.is-wide{width:min(94vw, 92rem); max-width:none;
+  margin-left:calc(50% - min(47vw, 46rem)); position:relative; z-index:10;
+  box-shadow:0 20px 50px -30px rgba(0,0,0,.45)}
+@media (max-width:760px){.card.is-wide{width:auto; margin-left:0}}
+
+/* lieux et entités ------------------------------------------------------------ */
+.topo{--rows:4; display:grid; grid-template-columns:1fr 1fr; gap:1rem}
+.topo.is-three{--rows:3; grid-template-columns:repeat(3,minmax(0,1fr))}
+.topo-box{display:grid; grid-row:span var(--rows); grid-template-rows:subgrid; row-gap:.8rem; align-content:start; min-width:0; padding:1.1rem;
+  background:var(--card); border-radius:1.25rem}
+.topo-box-head{display:grid; grid-template-columns:auto minmax(0,1fr); align-items:center; column-gap:.85rem; margin-bottom:.2rem}
+.topo-ic{grid-row:span 2; width:3.1rem; height:3.1rem; display:grid; place-items:center; border-radius:.9rem; background:var(--tile)}
+.topo-ic svg{width:2.05rem; height:2.05rem; fill:none; stroke-linecap:round; stroke-linejoin:round}
+.ti-l{stroke:var(--ink); stroke-width:2}
+.ti-f{fill:var(--ink)}
+.ti-y{fill:var(--metro); stroke:var(--ink); stroke-width:1.8}
+.ti-scr{fill:var(--term-bg); stroke:var(--ink); stroke-width:2}
+.ti-cmd{stroke:var(--metro); stroke-width:2.4}
+.ti-prm{stroke:var(--term-ink); stroke-width:1.6}
+.topo-box-head h4{margin:0; align-self:end; font-size:1.35rem; font-stretch:82%; font-weight:800; line-height:1.05; letter-spacing:-.01em}
+.topo-kind{align-self:start; margin-top:.2rem; font-size:.86rem; line-height:1.3; color:var(--muted)}
+.topo-box > p{margin:0; font-size:.92rem; color:var(--ink-2)}
+.tb-group{min-width:0}
+.tb-group.is-done, .tb-group.is-inv{padding:.8rem .9rem; background:var(--tile); border-radius:.9rem}
+.tb-group.is-cond{padding-top:.85rem; border-top:1px solid var(--line-strong)}
+.tb-group > p{margin:0; font-size:.92rem; color:var(--ink-2)}
+.tb-group > .tb-title{display:flex; align-items:center; gap:.55rem; margin:0 0 .55rem;
+  font-size:.95rem; font-weight:700; line-height:1.25; color:var(--ink)}
+.tb-badge{flex:none; width:1.35rem; height:1.35rem; display:grid; place-items:center; border-radius:50%;
+  font-size:.74rem; font-weight:800; line-height:1}
+.is-done .tb-badge{background:var(--runtime); color:var(--panel)}
+.is-done .tb-badge::before{content:"\2713"}
+.is-todo .tb-badge{background:var(--metro); color:var(--on-metro)}
+.tb-list{list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:.5rem;
+  font-size:.9rem; line-height:1.45; color:var(--ink-2)}
+.tb-list li{position:relative; margin:0; padding-left:1.6rem}
+.tb-list li::before{content:""; position:absolute; left:.1rem; top:.2rem; width:.95rem; height:.95rem; box-sizing:border-box}
+.is-done .tb-list li::before{left:.38rem; top:.22rem; width:.38rem; height:.7rem; border:solid var(--runtime);
+  border-width:0 2.4px 2.4px 0; transform:rotate(45deg)}
+.is-todo .tb-list li::before{border:2px solid var(--ink); border-radius:.3rem; background:var(--panel)}
+.is-inv .tb-list li::before{--role:var(--muted); left:.2rem; top:.38rem; width:.7rem; height:.7rem; border-radius:50%; background:var(--role)}
+.is-inv .tb-list li.is-runtime::before{--role:var(--runtime)}
+.is-inv .tb-list li.is-truth::before{--role:var(--truth)}
+.is-inv .tb-list li.is-copy::before{background:transparent; border:2px dashed var(--muted)}
+.legend{display:flex; flex-wrap:wrap; gap:.6rem 1.4rem; font-size:.84rem; color:var(--muted)}
+.legend > span{display:inline-flex; align-items:center; gap:.4rem}
+.legend-dot{--role:var(--muted); width:.7rem; height:.7rem; border-radius:50%; background:var(--role)}
+.legend-dot.is-truth{--role:var(--truth)}
+.legend-dot.is-runtime{--role:var(--runtime)}
+.legend-dot.is-moved{--role:var(--moved)}
+.legend-dot.is-dropped{--role:var(--dropped)}
+.legend-swatch{width:.7rem; height:.7rem; border-radius:50%; border:2px dashed var(--muted); box-sizing:border-box}
+
+/* trajets : une ligne jaune et ses stations ---------------------------------- */
+.flows{position:relative; padding-left:2.5rem}
+.flows::before{content:""; position:absolute; left:.8rem; top:1.25rem; bottom:1.25rem; width:4px;
+  margin-left:-2px; border-radius:2px; background:var(--metro)}
+.flow{position:relative; display:flex; flex-wrap:wrap; align-items:baseline; gap:.1rem .55rem;
+  padding:.7rem 0; font-family:var(--sans); font-size:1rem; font-weight:700; color:var(--ink); white-space:normal}
+.flow::before{content:""; position:absolute; left:-2.25rem; top:.98rem; width:1.1rem; height:1.1rem;
+  border-radius:50%; background:var(--card); border:3px solid var(--ink)}
+.flow-arrow{font-family:var(--mono); font-weight:400; color:var(--muted); letter-spacing:-.06em}
+.flow-label{flex:1 0 100%; font-size:.92rem; font-weight:400; color:var(--muted)}
+
+/* trajet d'une version : trois stations sur la ligne jaune -------------------
+   Une carte par lieu, au même gabarit : un dessin au trait, le nom, son rôle,
+   ce qu'il contient, et ce qu'il peut faire d'une clé. Entre les cartes, la
+   ligne jaune porte ce qui circule. Monochrome, le jaune pour la ligne et les
+   clés, le vert et le rouge pour le seul verdict. */
+.journey{--art:8.5rem; --pad:1rem; --lineY:calc(var(--pad) + var(--art) / 2); display:grid; margin-top:.4rem;
+  grid-template-columns:minmax(0,1fr) 7.5rem minmax(0,1fr) 7.5rem minmax(0,1fr); align-items:stretch}
+.j-stop{position:relative; display:flex; flex-direction:column; gap:.55rem; min-width:0;
+  padding:var(--pad) var(--pad) 1.15rem; background:var(--mist); border-radius:1.25rem}
+.j-stop:not(:first-child)::before, .j-stop:not(:last-child)::after{content:""; position:absolute; z-index:2;
+  top:calc(var(--lineY) - .65rem); width:1.3rem; height:1.3rem; border-radius:50%;
+  background:var(--panel); border:3.5px solid var(--ink)}
+.j-stop:not(:first-child)::before{left:-.65rem}
+.j-stop:not(:last-child)::after{right:-.65rem}
+.j-stop:nth-child(3)::after, .j-stop:nth-child(5)::before{top:calc(var(--lineY) - 1.3rem); height:2.6rem; border-radius:.65rem}
+.j-art{height:var(--art); display:grid; place-items:center; background:var(--panel); border-radius:.9rem}
+.j-art svg{height:calc(var(--art) - 1.4rem); width:auto; max-width:100%}
+.j-name{margin:.5rem 0 0; font-stretch:82%; font-weight:800; font-size:1.45rem; line-height:1.05; letter-spacing:-.015em}
+.j-role{margin:0; font-size:.92rem; color:var(--muted)}
+.j-has{list-style:none; margin:.25rem 0 .35rem; padding:.75rem 0 0; border-top:1px solid var(--line-strong);
+  display:flex; flex-direction:column; gap:.5rem}
+.j-has li{margin:0; display:flex; align-items:center; gap:.6rem; font-size:.86rem; line-height:1.3; color:var(--ink-2)}
+.j-ic{flex:none; width:1.1rem; height:1.1rem; fill:none; stroke:var(--ink); stroke-width:1.8;
+  stroke-linecap:round; stroke-linejoin:round}
+.j-ic .j-icf{fill:var(--mist)}
+.j-verdict{--role:var(--runtime); margin:auto 0 0; display:flex; align-items:center; gap:.5rem;
+  padding:.6rem .65rem; border-radius:.75rem; font-size:.84rem; font-weight:700; line-height:1.3; color:var(--ink);
+  background:color-mix(in oklab, var(--role) 15%, var(--panel))}
+.j-verdict.is-no{--role:var(--dropped)}
+.j-verdict b{flex:none; width:1.3rem; height:1.3rem; display:grid; place-items:center; border-radius:50%;
+  background:var(--role); color:var(--panel); font-size:.72rem}
+.j-leg{position:relative; min-width:0}
+.jl-h, .jl-v{position:absolute; overflow:visible}
+.jl-h{left:0; top:calc(var(--lineY) - 3.31rem); width:7.5rem; height:6.62rem}
+.jl-v{display:none}
+.jl-track{fill:none; stroke:var(--metro); stroke-width:8}
+.jl-track.is-two{stroke-width:7}
+.jl-chev, .jl-mo, .jl-tick, .jl-fold{fill:none; stroke-linecap:round; stroke-linejoin:round}
+.jl-chev{stroke:var(--ink); stroke-width:2.2}
+.jl-mo{stroke:var(--ink); stroke-width:2.4}
+.jl-tick{stroke:var(--ink); stroke-width:2}
+.jl-fold{stroke:var(--muted); stroke-width:1.6}
+.jl-stripe{fill:none; stroke:var(--ink); stroke-width:3}
+.jl-q{fill:var(--ink); font-family:var(--sans); font-weight:800; font-size:16px}
+.j-leg-label{position:absolute; top:calc(var(--lineY) + 2.2rem); left:-.25rem; right:-.25rem; margin:0; max-width:none;
+  display:flex; flex-direction:column; gap:.15rem; text-align:center}
+.j-leg-label strong{font-size:.84rem; line-height:1.25; color:var(--ink)}
+.j-leg-label span{font-size:.76rem; line-height:1.25; color:var(--muted)}
+.j-l, .j-l2, .j-l3, .j-lp, .j-ly, .j-mut, .j-bad, .j-badl{stroke-linecap:round; stroke-linejoin:round}
+.j-l{fill:none; stroke:var(--ink); stroke-width:2.5}
+.j-l2{fill:none; stroke:var(--ink); stroke-width:2}
+.j-l3{fill:none; stroke:var(--ink); stroke-width:3}
+.j-lp{fill:var(--panel); stroke:var(--ink); stroke-width:2.5}
+.j-ly{fill:var(--metro); stroke:var(--ink); stroke-width:2.2}
+.j-yl{fill:none; stroke:var(--metro); stroke-width:4; stroke-linecap:round}
+.j-mut{fill:none; stroke:var(--muted); stroke-width:2.2}
+.j-fi{fill:var(--ink)}
+.j-bad{fill:var(--panel); stroke:var(--dropped); stroke-width:2.5}
+.j-badl{fill:none; stroke:var(--dropped); stroke-width:2.5}
+.j-shd{fill:var(--line)}
+.j-term{fill:var(--term-bg); stroke:var(--ink); stroke-width:1.6}
+.j-tr{fill:var(--tl-red)} .j-ty{fill:var(--tl-yellow)} .j-tg{fill:var(--tl-green)}
+.j-tprompt, .j-tcmd, .j-tout, .j-tok, .j-spk, .j-dash, .j-dl{fill:none; stroke-linecap:round; stroke-linejoin:round}
+.j-tprompt{stroke:var(--term-ink); stroke-width:1.8}
+.j-tcmd{stroke:var(--metro); stroke-width:3.2}
+.j-tout{stroke:var(--term-ink); stroke-opacity:.38; stroke-width:2.2}
+.j-tok{stroke:var(--term-ok); stroke-width:2.2}
+.j-keys{fill:none; stroke:var(--muted); stroke-opacity:.5; stroke-width:3.6; stroke-dasharray:5.2 1.9}
+.j-spk{stroke:var(--ink); stroke-width:2}
+.j-dash{fill:var(--panel); stroke:var(--muted); stroke-width:2; stroke-dasharray:3.5 3.2}
+.j-dl{stroke:var(--muted); stroke-width:2; stroke-dasharray:1 4}
+.j-gf{fill:var(--runtime)}
+.trip-moral{text-align:center; text-wrap:balance;
+  max-width:none; margin-inline:auto; font-size:.98rem; color:var(--ink-2)}
+.trip-moral strong{color:var(--ink)}
+@media (max-width:900px){
+  .journey{grid-template-columns:1fr}
+  .j-leg{height:8.5rem}
+  .jl-h{display:none}
+  .jl-v{display:block; left:50%; top:0; width:7.5rem; height:8.5rem; margin-left:-3.75rem}
+  .j-leg-label{top:50%; left:calc(50% + 2.7rem); right:0; transform:translateY(-50%); text-align:left}
+  .j-stop:not(:first-child)::before{left:50%; top:-.65rem; margin-left:-.65rem}
+  .j-stop:not(:last-child)::after{right:auto; left:50%; top:auto; bottom:-.65rem; margin-left:-.65rem}
+  .j-stop:nth-child(3)::after, .j-stop:nth-child(5)::before{width:2.6rem; height:1.3rem; margin-left:-1.3rem}
+}
+
+/* parcours : une ligne horizontale, une station par étape --------------------- */
+.chain{display:flex; flex-wrap:nowrap; align-items:flex-start}
+.chain-arrow{display:none}
+.step-box{flex:1 1 0; min-width:0; position:relative; display:flex; flex-direction:column; align-items:center;
+  gap:.7rem; padding:0 .3rem; text-align:center; font-family:var(--sans); font-size:.86rem; font-weight:600;
+  color:var(--ink); line-height:1.3; white-space:normal; background:none; border:0}
+.step-box::before{content:""; position:relative; z-index:1; width:1.15rem; height:1.15rem; border-radius:50%;
+  background:var(--card); border:3px solid var(--ink); transition:transform .15s}
+.step-box::after{content:""; position:absolute; top:.575rem; left:50%; width:100%; height:4px; margin-top:-2px;
+  background:var(--ink)}
+.chain > .step-box:last-of-type::after{display:none}
+a.step-box{text-decoration:none}
+a.step-box:hover::before{transform:scale(1.2)}
+a.step-box.is-key::before{background:var(--metro); width:1.45rem; height:1.45rem; margin-top:-.15rem; margin-bottom:-.15rem}
+@media (max-width:640px){
+  .chain{flex-direction:column; align-items:stretch}
+  .step-box{flex-direction:row; text-align:left; padding:.55rem 0; gap:.85rem}
+  .step-box::after{top:50%; left:.575rem; width:4px; height:100%; margin:0 0 0 -2px}
+}
+
+/* mécanismes ---------------------------------------------------------------- */
+.mechs{display:grid; grid-template-columns:repeat(auto-fit,minmax(15rem,1fr)); gap:1rem}
+.mech{background:var(--card); border-radius:var(--r-lg); padding:1.05rem 1.15rem}
+.mech h4{font-size:1.12rem; font-stretch:82%; font-weight:800; margin-bottom:.25rem}
+.mech-tag{font-family:var(--mono); font-size:.72rem; color:var(--muted); margin:0 0 .6rem}
+.mech p{font-size:.92rem; color:var(--ink-2); margin:0}
+
+/* décisions ----------------------------------------------------------------- */
+.decisions{display:grid; grid-template-columns:1fr 1fr; gap:1rem}
+.dec-panel{--role:var(--muted); background:var(--card); border-radius:var(--r-lg); padding:1.1rem 1.2rem}
+.dec-panel.is-locked{--role:var(--runtime)}
+.dec-panel.is-open{--role:var(--moved)}
+.dec-panel h3{font-size:1.25rem; font-stretch:82%; font-weight:800; margin-bottom:.6rem}
+.dec-panel ul{list-style:none; padding:0}
+.dec-panel li{display:flex; gap:.7rem; font-size:.94rem; color:var(--ink-2); padding:.5rem 0; border-bottom:1px solid var(--line)}
+.dec-panel li:last-child{border-bottom:0}
+.dec-mark{flex:0 0 1.35rem; height:1.35rem; display:grid; place-items:center; border-radius:50%;
+  font-size:.75rem; font-weight:800; color:var(--bg); background:var(--role); margin-top:.1rem}
+
+/* étapes : numéros noirs ------------------------------------------------------ */
+.steps{list-style:none; padding:0; margin:0}
+.step{display:flex; gap:1rem; padding:1.05rem 0; border-bottom:1px solid var(--line)}
+.step:first-child{padding-top:.2rem}
+.step:last-child{border-bottom:0}
+.step-num{flex:0 0 2rem; height:2rem; display:grid; place-items:center; border-radius:50%;
+  font-family:var(--sans); font-size:.95rem; font-weight:700; color:var(--plaque-ink); background:var(--plaque);
+  box-shadow:0 0 0 1px var(--plaque-edge)}
+.step.is-rollback .step-num{color:var(--ink); background:var(--metro); box-shadow:none}
+.step-body{flex:1 1 auto; min-width:0}
+.step-body h4{font-size:1.18rem; font-stretch:82%; font-weight:800; letter-spacing:-.01em}
+.step-body p{font-size:.95rem; color:var(--ink-2); margin:0}
+.step-body ul{font-size:.95rem; color:var(--ink-2)}
+.step-body > * + *{margin-top:.6rem}
+.step-body > h4 + p{margin-top:.25rem}
+.step-body > pre.cmd, .step-body > pre.cmd + *{margin-top:1.1rem}
+.rollback-tag{display:inline-block; margin-left:.55rem; font-family:var(--sans); font-stretch:100%;
+  font-size:.72rem; font-weight:700; color:var(--ink); background:var(--metro);
+  border-radius:999px; padding:.12rem .55rem; vertical-align:.2em}
+
+/* tableaux ------------------------------------------------------------------ */
+table{border-collapse:separate; border-spacing:0 .45rem; margin:-.45rem 0; min-width:34rem; width:100%;
+  font-size:.92rem; line-height:1.5}
+th, td{text-align:left; vertical-align:top}
+th{padding:.15rem 1rem 0; font-stretch:82%; font-weight:800; font-size:.98rem; line-height:1.2; color:var(--ink)}
+th:first-child{width:36%}
+td{padding:.8rem 1rem; color:var(--ink-2); background:var(--tile)}
+td:first-child{font-weight:600; color:var(--ink); border-radius:.8rem 0 0 .8rem}
+td:last-child{border-radius:0 .8rem .8rem 0}
+td + td{border-left:1px solid var(--line)}
+/* Sur téléphone, chaque ligne devient une fiche : son titre, puis chaque
+   valeur sous le nom de sa colonne (posé par le script). */
+@media (max-width:700px){
+  .card.scroll-x{overflow-x:visible}
+  table, thead, tbody, tr, td{display:block; min-width:0}
+  table{margin:0}
+  thead{display:none}
+  tbody tr{padding:.85rem 1rem; background:var(--tile); border-radius:.9rem}
+  tbody tr + tr{margin-top:.5rem}
+  td, td:first-child, td:last-child{padding:0; background:none; border:0; border-radius:0}
+  td:first-child{font-size:.98rem; font-weight:700}
+  td + td{margin-top:.55rem; border-left:0}
+  td + td::before{content:attr(data-label); display:block; margin-bottom:.1rem;
+    font-size:.76rem; font-weight:600; color:var(--muted)}
+}
+
+/* renvoi « ce sujet est développé ailleurs » ------------------------------- */
+.see-more{margin:.9rem 0 0; font-size:.9rem; color:var(--muted)}
+.see-more a{color:var(--ink); font-weight:600; text-decoration:underline;
+  text-decoration-color:var(--metro); text-decoration-thickness:3px; text-underline-offset:3px}
+.see-more a:hover{text-decoration-color:var(--ink)}
+.see-more::before{content:"\2192\00a0"; color:var(--ink)}
+.step-body p.see-more{font-size:.9rem; color:var(--muted)}
+
+/* demande d'origine : une citation, neutre -------------------------------- */
+.origin{margin:3rem 0 0; padding:1.1rem 1.25rem; background:var(--mist); border-radius:var(--r-lg)}
+.origin-head{margin:0 0 .5rem; font-family:var(--mono); font-size:.68rem;
+  text-transform:uppercase; letter-spacing:.12em; color:var(--muted)}
+.origin-q{margin:0; max-width:none; font-size:.95rem; line-height:1.6; color:var(--ink-2); white-space:pre-wrap}
+.origin-q + .origin-q{margin-top:.8rem; padding-top:.8rem; border-top:1px dashed var(--line-strong)}
+.origin-n{display:block; margin-bottom:.25rem; font-family:var(--mono); font-size:.66rem;
+  text-transform:uppercase; letter-spacing:.1em; color:var(--muted)}
+
+.foot{margin-top:2.5rem; padding-top:1rem; border-top:1px solid var(--line);
+  font-family:var(--mono); font-size:.72rem; color:var(--muted)}
+
+/* responsive ------------------------------------------------------------- */
+@media (max-width:1000px){
+  .topo.is-three{grid-template-columns:1fr 1fr}
+}
+@media (max-width:820px){
+  .hero-in{grid-template-columns:1fr}
+  .display-fig{justify-self:start}
+}
+@media (max-width:760px){
+  .topo,.topo.is-three,.decisions{grid-template-columns:1fr}
+}
+/* Sur téléphone, la barre du haut tient en deux lignes : l'enseigne et le
+   thème, puis les volets. Chaque section garde son propre interrupteur de notes. */
+@media (max-width:600px){
+  .topbar-in{gap:.35rem .8rem; padding-block:.45rem .3rem}
+  .head-tools{margin-left:auto}
+  #notes-all{display:none}
+  .tabs{order:3; flex:1 0 100%; flex-wrap:nowrap; gap:1.1rem; overflow-x:auto}
+  .tab{font-size:.84rem; white-space:nowrap; padding:.4rem 0}
+  .tab-num{display:none}
+}
+
+/* ── Suggestions et mises en garde ──────────────────────────────────────── */
+.note{position:relative; margin:1rem 0 0; padding:1rem 1.15rem 1.05rem 4.2rem; min-height:4.4rem;
+  font-size:.92rem; color:var(--ink-2); background:var(--card); border-radius:var(--r-lg)}
+.note-ic{position:absolute; left:1rem; top:1rem; width:2.4rem; height:2.4rem; display:grid; place-items:center;
+  border-radius:.75rem; background:var(--tile)}
+.volet .note.is-caution .note-ic{background:var(--metro)}
+.note-ic svg{width:1.45rem; height:1.45rem; fill:none; stroke-linecap:round; stroke-linejoin:round}
+.ni-bulb{fill:var(--metro); stroke:var(--ink); stroke-width:1.7}
+.ni-base{stroke:var(--ink); stroke-width:1.7}
+.ni-warn{stroke:var(--on-metro); stroke-width:1.8}
+.ni-dot{fill:var(--on-metro)}
+.note-kind{display:block; margin:.12rem 0 .3rem; font-family:var(--sans); font-stretch:82%; font-weight:800;
+  font-size:1.08rem; line-height:1.2; letter-spacing:-.005em; color:var(--ink)}
+.note p{margin:0 0 .5rem; max-width:none; font-size:.92rem}
+.note p:last-child{margin-bottom:0}
+[data-notes="off"] .note{display:none}
+.tab-notes{margin-left:.45rem; padding:0 .38rem; border-radius:999px; font-family:var(--mono);
+  font-size:.66rem; color:var(--ink-2); background:var(--mist); border:1px solid var(--line-strong)}
+@media (max-width:600px){
+  .note{padding:1rem 1rem 1.05rem; min-height:0}
+  .note-ic{position:static; display:inline-grid; vertical-align:middle; width:2rem; height:2rem;
+    margin:0 .55rem .5rem 0; border-radius:.6rem}
+  .note-ic svg{width:1.25rem; height:1.25rem}
+  .note-kind{display:inline; vertical-align:middle}
+}
+[data-notes="off"] .tab-notes{display:none}
+
+/* ── Glossaire ──────────────────────────────────────────────────────────── */
+.gloss{position:relative; white-space:nowrap}
+.gloss-i{margin-left:.22em; width:1.1em; height:1.1em; padding:0; cursor:help;
+  font-family:var(--sans); font-size:.7em; font-weight:700; font-style:normal; line-height:1;
+  color:var(--bg); background:var(--ink); border:0; border-radius:50%; vertical-align:.18em}
+.gloss-i:hover{background:var(--truth)}
+.gloss-pop{position:absolute; left:0; top:calc(100% + .45rem); z-index:5;
+  width:min(22rem, 76vw); padding:.7rem .8rem; font-family:var(--sans); font-size:.86rem; font-weight:400;
+  font-stretch:100%; letter-spacing:0; line-height:1.5; white-space:normal; text-align:left; color:var(--ink-2);
+  background:var(--panel); border:1px solid var(--line-strong); border-radius:var(--r-md);
+  box-shadow:0 18px 40px -22px rgba(0,0,0,.45)}
+.gloss-pop[hidden]{display:none}
+.gloss:hover .gloss-pop, .gloss:focus-within .gloss-pop{display:block}
+</style>
+<style>
+/* Une seule page, sans volets : les commandes de l'en-tête restent à droite. */
+.topbar-in > .head-tools{margin-left:auto}
+</style>
+</head>
+<body>
+<span class="tabs-sentinel" aria-hidden="true"></span>
+<header class="topbar">
+  <div class="topbar-in">
+    <span class="plaque plaque-sm">DrakBase</span>
+    <div class="head-tools" id="head-tools">
+      <button class="notes-toggle" id="notes-all" type="button" aria-pressed="false">Masquer les suggestions et mises en garde</button>
+      <button class="theme-toggle" id="theme-toggle" type="button" aria-pressed="false">Thème</button>
+    </div>
+  </div>
+</header>
+
+<div class="hero">
+  <div class="hero-in">
+    <div class="hero-text">
+      <p class="eyebrow">Guide des développeurs · mis à jour le 24 novembre 2026</p>
+      <p class="wordmark">DrakBase</p>
+      <h1>Publier ses apps sur DrakBase</h1>
+      <p class="dek">Comment brancher une app macOS en Swift, une app Tauri ou une stack Docker sur le serveur de mises à jour DrakBase, puis y publier ses versions, de l'installation de l'outil à la première mise à jour reçue.</p>
+      <div class="hero-cta">
+        <a class="btn" href="#s-chemin">Commencer</a>
+        <a class="btn is-ghost" href="https://github.com/DrakBase/client">Le dépôt DrakBase/client</a>
+      </div>
+    </div>
+    <div class="display-fig version-tag" aria-label="Outil drakbase, version 0.6.0, en ligne">
+      <p class="version-label">Outil drakbase</p>
+      <div class="version-row"><span class="version-num">0.6.0</span><span class="plaque plaque-sm">en ligne</span></div>
+    </div>
+  </div>
+</div>
+
+<div class="wrap">
+
+<section class="volet" id="volet-apps">
+  <div class="volet-head">
+    <p class="eyebrow">Le guide</p>
+    <h2>Publier ses apps</h2>
+    <p>Pour le développeur d'une app macOS en Swift, d'une app Tauri (macOS, Linux, Windows) ou d'une stack Docker : de l'installation de l'outil jusqu'à la première version reçue par les utilisateurs.</p>
+  </div>
+
+  <!-- 1.1 ---------------------------------------------------------------- -->
+  <section class="section" id="s-chemin">
+    <div class="section-head">
+      <span class="section-num">1.1</span>
+      <h3>Comment une version arrive chez les utilisateurs</h3>
+    </div>
+    <div class="journey" role="group" aria-label="Le trajet d'une version, de votre Mac à l'app installée">
+      <article class="j-stop">
+        <div class="j-art"><svg viewBox="0 0 160 100" aria-hidden="true"><ellipse class="j-shd" cx="68" cy="95" rx="64" ry="3"/><rect class="j-lp" x="20" y="4" width="96" height="60" rx="6"/><rect class="j-term" x="26" y="10" width="84" height="48" rx="2.5"/><circle class="j-fi" cx="68" cy="7" r="1.1"/><circle class="j-tr" cx="32" cy="15.5" r="1.7"/><circle class="j-ty" cx="37.5" cy="15.5" r="1.7"/><circle class="j-tg" cx="43" cy="15.5" r="1.7"/><path class="j-tprompt" d="M31.5 24.5l3.2 2.6l-3.2 2.6"/><path class="j-tcmd" d="M38.5 27.1H78"/><path class="j-tout" d="M31.5 35.5H96M31.5 42.5H84"/><path class="j-tok" d="M31.5 50.2l2.3 2.3l4.3-4.6"/><path class="j-tout" d="M42 50.5H72"/><path class="j-lp" d="M20 64H116L132 91H4Z"/><path class="j-keys" d="M25.5 69H110.5M22.5 74.5H113.5M19.5 80H37M41 80H95M99 80H116.5"/><rect class="j-l2" x="52" y="84" width="32" height="4.5" rx="1.5"/><path class="j-spk" d="M146 7.5V12.5M153.5 12.5l-3.4 3.4M157.5 22.5h-4.5"/><g transform="translate(140 28) rotate(105)"><path class="j-ly" d="M8 -3.4H42V7.5H37V3.4H33V9.5H28V3.4H8Z"/><circle class="j-ly" r="11"/><circle class="j-lp" r="3.8"/></g></svg></div>
+        <h4 class="j-name">Votre Mac</h4>
+        <p class="j-role">signe et envoie, avec l'outil drakbase</p>
+        <ul class="j-has">
+          <li><svg class="j-ic" viewBox="0 0 20 20" aria-hidden="true"><circle cx="7" cy="10" r="3.5"/><path d="M10.5 10H17M14.5 10V13"/></svg>la clé privée de l’app</li>
+          <li><svg class="j-ic" viewBox="0 0 20 20" aria-hidden="true"><rect x="4.5" y="9" width="11" height="8" rx="2"/><path d="M7 9V6.5a3 3 0 0 1 6 0V9"/></svg>son mot de passe, dans le trousseau</li>
+          <li><svg class="j-ic" viewBox="0 0 20 20" aria-hidden="true"><rect x="7" y="7" width="9" height="10" rx="1.5"/><path d="M4 13V4.5A1.5 1.5 0 0 1 5.5 3H12"/></svg>une copie des clés dans KeePassXC</li>
+        </ul>
+        <p class="j-verdict"><b aria-hidden="true">✓</b>Seul à pouvoir signer</p>
+      </article>
+      <div class="j-leg">
+        <svg class="jl-h" viewBox="0 -60 136 120" aria-hidden="true"><path class="jl-track" d="M-2 0H138"/><path class="jl-chev" d="M113 -3.5L117 0L113 3.5M119.5 -3.5L123.5 0L119.5 3.5"/><path class="jl-mo" d="M20 -11H38M27 -18H39M22 11H36"/><g transform="rotate(-6 72 -1)"><g transform="rotate(16 89 -16)"><rect class="j-ly" x="76" y="-23" width="26" height="14" rx="2"/><path class="jl-stripe" d="M76 -18.5H102"/></g><rect class="j-lp" x="50" y="-15" width="44" height="29" rx="3.5"/><path class="jl-fold" d="M52.5 12L65 1.5M91.5 12L79 1.5"/><path class="j-l2" d="M52 -13L72 1L92 -13"/><circle class="j-ly" cx="72" cy="1" r="7.5"/><path class="jl-tick" d="M68.6 1.2l2.3 2.3l4.2-4.6"/></g></svg><svg class="jl-v" viewBox="-60 0 120 136" aria-hidden="true"><path class="jl-track" d="M0 -2V138"/><path class="jl-chev" d="M-3.5 113L0 117L3.5 113M-3.5 119.5L0 123.5L3.5 119.5"/><path class="jl-mo" d="M-12 18V36M-19 26V37M12 21V35"/><g transform="translate(-72 73)"><g transform="rotate(-6 72 -1)"><g transform="rotate(16 89 -16)"><rect class="j-ly" x="76" y="-23" width="26" height="14" rx="2"/><path class="jl-stripe" d="M76 -18.5H102"/></g><rect class="j-lp" x="50" y="-15" width="44" height="29" rx="3.5"/><path class="jl-fold" d="M52.5 12L65 1.5M91.5 12L79 1.5"/><path class="j-l2" d="M52 -13L72 1L92 -13"/><circle class="j-ly" cx="72" cy="1" r="7.5"/><path class="jl-tick" d="M68.6 1.2l2.3 2.3l4.2-4.6"/></g></g></svg>
+        <p class="j-leg-label"><strong>version signée</strong><span>avec votre jeton d'API</span></p>
+      </div>
+      <article class="j-stop">
+        <div class="j-art"><svg viewBox="0 0 160 100" aria-hidden="true"><ellipse class="j-shd" cx="80" cy="95" rx="72" ry="3"/><rect class="j-dash" x="14" y="50" width="25" height="19" rx="2"/><path class="j-dl" d="M14 56H39"/><rect class="j-lp" x="4" y="70" width="25" height="22" rx="2"/><path class="j-l2" d="M4 76H29"/><rect class="j-ly" x="13.5" y="70" width="6" height="6" rx="1"/><rect class="j-lp" x="31" y="70" width="22" height="22" rx="2"/><path class="j-l2" d="M31 76H53"/><rect class="j-ly" x="39" y="70" width="6" height="6" rx="1"/><rect class="j-lp" x="58" y="4" width="46" height="84" rx="6"/><rect class="j-l2" x="63" y="10" width="36" height="22" rx="3"/><circle class="j-ly" cx="69" cy="21" r="2.4"/><circle class="j-gf" cx="76" cy="21" r="2"/><path class="j-mut" d="M84 16V26M88.5 16V26M93 16V26"/><rect class="j-l2" x="63" y="35" width="36" height="22" rx="3"/><circle class="j-ly" cx="69" cy="46" r="2.4"/><circle class="j-gf" cx="76" cy="46" r="2"/><path class="j-mut" d="M84 41V51M88.5 41V51M93 41V51"/><rect class="j-l2" x="63" y="60" width="36" height="22" rx="3"/><circle class="j-ly" cx="69" cy="71" r="2.4"/><circle class="j-gf" cx="76" cy="71" r="2"/><path class="j-mut" d="M84 66V76M88.5 66V76M93 66V76"/><path class="j-l" d="M64 88V93M98 88V93"/><path class="j-dl" d="M106 24H117"/><circle class="j-lp" cx="135" cy="24" r="16"/><ellipse class="j-l2" cx="135" cy="24" rx="7" ry="16"/><path class="j-l2" d="M119 24H151M121.1 16H148.9M121.1 32H148.9"/><circle class="j-bad" cx="135" cy="70" r="15"/><circle class="j-mut" cx="129.5" cy="70" r="4.5"/><path class="j-mut" d="M134 70H143.5M140 70V74"/><path class="j-badl" d="M124.4 59.4L145.6 80.6"/></svg></div>
+        <h4 class="j-name">updates.drakbase.com</h4>
+        <p class="j-role">vérifie et distribue les versions</p>
+        <ul class="j-has">
+          <li><svg class="j-ic" viewBox="0 0 20 20" aria-hidden="true"><path d="M10 3L17 7L10 11L3 7Z"/><path d="M3 11L10 15L17 11"/></svg>les versions publiées</li>
+          <li><svg class="j-ic" viewBox="0 0 20 20" aria-hidden="true"><path d="M5 3H12L15 6V17H5Z"/><path d="M8 10H12M8 13H11"/></svg>les brouillons</li>
+          <li><svg class="j-ic" viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="7"/><path d="M3 10H17M10 3C12.5 5.5 12.5 14.5 10 17M10 3C7.5 5.5 7.5 14.5 10 17"/></svg>la page publique de chaque app</li>
+          <li><svg class="j-ic" viewBox="0 0 20 20" aria-hidden="true"><path d="M4 6H16M4 14H16"/><circle class="j-icf" cx="8" cy="6" r="2"/><circle class="j-icf" cx="13" cy="14" r="2"/></svg>l’administration</li>
+        </ul>
+        <p class="j-verdict is-no"><b aria-hidden="true">✕</b>Aucune clé : ne peut rien signer</p>
+      </article>
+      <div class="j-leg">
+        <svg class="jl-h" viewBox="0 -60 136 120" aria-hidden="true"><path class="jl-track is-two" d="M-2 -10H138M-2 10H138"/><path class="jl-chev" d="M23 -13.5L19 -10L23 -6.5M29.5 -13.5L25.5 -10L29.5 -6.5"/><path class="jl-chev" d="M106.5 6.5L110.5 10L106.5 13.5M113 6.5L117 10L113 13.5"/><path class="jl-mo" d="M111 -18H122M114 -24H122M14 18H27M18 24H27"/><rect class="j-lp" x="77" y="-22" width="30" height="22" rx="7"/><text class="jl-q" x="92" y="-5.4" text-anchor="middle">?</text><rect class="j-lp" x="31" y="-1" width="30" height="22" rx="2.5"/><path class="j-l2" d="M31 5.5H61"/><rect class="j-ly" x="43" y="-1" width="6" height="6.5" rx="1"/><circle class="j-ly" cx="59" cy="18" r="6"/><path class="jl-tick" d="M56.4 18.2l1.8 1.8l3.2-3.6"/></svg><svg class="jl-v" viewBox="-60 0 120 136" aria-hidden="true"><path class="jl-track is-two" d="M-10 -2V138M10 -2V138"/><path class="jl-chev" d="M-13.5 23L-10 19L-6.5 23M-13.5 29.5L-10 25.5L-6.5 29.5"/><path class="jl-chev" d="M6.5 106.5L10 110.5L13.5 106.5M6.5 113L10 117L13.5 113"/><path class="jl-mo" d="M-18 108V119M-24 111V119M18 16V28M24 19V28"/><rect class="j-lp" x="-25" y="81" width="30" height="22" rx="7"/><text class="jl-q" x="-10" y="97.6" text-anchor="middle">?</text><rect class="j-lp" x="-5" y="35" width="30" height="22" rx="2.5"/><path class="j-l2" d="M-5 41.5H25"/><rect class="j-ly" x="7" y="35" width="6" height="6.5" rx="1"/><circle class="j-ly" cx="23" cy="54" r="6"/><path class="jl-tick" d="M20.4 54.2l1.8 1.8l3.2-3.6"/></svg>
+        <p class="j-leg-label"><strong>« plus récent ? »</strong><strong>archive signée</strong><span>ou « rien de nouveau »</span></p>
+      </div>
+      <article class="j-stop">
+        <div class="j-art"><svg viewBox="0 0 160 100" aria-hidden="true"><rect class="j-lp" x="20" y="8" width="120" height="84" rx="10"/><path class="j-l2" d="M20 25H140"/><circle class="j-l2" cx="31" cy="16.5" r="2.8"/><circle class="j-l2" cx="40" cy="16.5" r="2.8"/><circle class="j-l2" cx="49" cy="16.5" r="2.8"/><path class="j-ly" d="M80 34L97 40V53C97 64 89.5 71 80 75C70.5 71 63 64 63 53V40Z"/><path class="j-l3" d="M72 54.5l5.5 5.5l10.5 -11.5"/></svg></div>
+        <h4 class="j-name">L’app installée</h4>
+        <p class="j-role">vérifie, installe, se relance</p>
+        <ul class="j-has">
+          <li><svg class="j-ic" viewBox="0 0 20 20" aria-hidden="true"><circle cx="7" cy="10" r="3.5"/><path d="M10.5 10H17M14.5 10V13"/></svg>les clés publiques de l’app</li>
+          <li><svg class="j-ic" viewBox="0 0 20 20" aria-hidden="true"><path d="M10 2.5L17 6.5V13.5L10 17.5L3 13.5V6.5Z"/><path d="M3 6.5L10 10.5L17 6.5M10 10.5V17.5"/></svg>le paquet DrakBase (Swift) ou le plugin de Tauri</li>
+          <li><svg class="j-ic" viewBox="0 0 20 20" aria-hidden="true"><rect x="2.5" y="6" width="15" height="8" rx="4"/><circle cx="13.5" cy="10" r="2.2"/></svg>le canal : stable ou bêta</li>
+        </ul>
+        <p class="j-verdict"><b aria-hidden="true">✓</b>Vérifie la signature, la version et l’identifiant</p>
+      </article>
+    </div>
+    <p class="trip-moral"><strong>Seul votre Mac peut signer.</strong> Un serveur piraté pourrait retenir une mise à jour, jamais en livrer une fausse.</p>
+  </section>
+
+  <!-- 1.2 ---------------------------------------------------------------- -->
+  <section class="section" id="s-mac">
+    <div class="section-head">
+      <span class="section-num">1.2</span>
+      <h3>Préparer son Mac</h3>
+      <button class="notes-toggle" type="button" data-notes-scope aria-pressed="false">Masquer les notes</button>
+    </div>
+    <p>L'outil drakbase ne tourne que sur macOS. Il vient, comme le paquet Swift et l'aide pour Tauri, du dépôt public <code>DrakBase/client</code>, par HTTPS : ni compte GitHub ni accès à demander. La liste comprend aussi un gestionnaire de mots de passe (<span class="gloss">KeePassXC<button class="gloss-i" type="button" aria-expanded="false" aria-controls="g-keepassxc" aria-label="Définition de : KeePassXC">i</button><span class="gloss-pop" id="g-keepassxc" role="tooltip" hidden>Un gestionnaire de mots de passe libre, qui range tout dans un seul fichier chiffré. L'outil drakbase y écrit lui-même une copie des clés de chaque app.</span></span>), où l'outil range une copie des clés de chaque app.</p>
+    <div class="card scroll-x">
+      <table>
+        <thead><tr><th>Ce qu'il faut</th><th>À quoi ça sert</th><th>Pour quelles apps</th></tr></thead>
+        <tbody>
+          <tr><td>Un compte sur l'administration, créé par un superadmin</td><td>créer votre jeton d'API, voir vos apps</td><td>toutes</td></tr>
+          <tr><td>Rust, pour sa commande <code>cargo</code></td><td>compiler et installer l'outil</td><td>toutes</td></tr>
+          <tr><td>KeePassXC et une base de mots de passe à vous</td><td>garder une copie des clés de signature</td><td>toutes</td></tr>
+          <tr><td>Un certificat de signature de code dans le trousseau (un certificat auto-signé suffit)</td><td>signer l'app, toujours avec le même</td><td>apps macOS, Swift ou Tauri</td></tr>
+          <tr><td>Xcode ou ses outils en ligne de commande, Swift 6.2 ou plus</td><td>construire l'app</td><td>apps Swift, macOS 14 ou plus</td></tr>
+          <tr><td>Docker, avec buildx et Docker Compose</td><td>construire les images</td><td>stacks Docker</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h4>Installer l'outil</h4>
+    <p>Une fois par Mac. La commande télécharge le code depuis le dépôt public, à l'étiquette de la version voulue (v0.6.0 au 24 novembre 2026), et place la commande drakbase dans <code>~/.cargo/bin/</code>, le dossier des programmes installés par cargo dans votre dossier personnel.</p>
+    <pre class="cmd">cargo install --git https&#58;//github.com/DrakBase/client --tag v0.6.0 am-cli --locked</pre>
+    <p>La dernière étiquette se lit avec <code>git ls-remote --tags --refs https&#58;//github.com/DrakBase/client.git 'v*'</code>.</p>
+
+    <h4>Créer le certificat de signature (apps macOS)</h4>
+    <p>Un certificat auto-signé suffit. Dans Trousseau d'accès (à ouvrir par Spotlight) : menu Trousseau d'accès › Assistant de certification › Créer un certificat…, avec un nom à vous, le type d'identité « Racine auto-signée » et le type de certificat « Signature de code ». Son nom exact se lit ensuite avec :</p>
+    <pre class="cmd">security find-identity -v -p codesigning</pre>
+    <p>C'est ce nom, entre guillemets, que prennent <code>--sign-id</code>, <code>codesign</code> et le réglage de signature de Xcode. S'il n'apparaît pas, ouvrir le certificat dans Trousseau d'accès et choisir « Toujours approuver » pour la signature de code, sous « Se fier ». Toutes les versions d'une app sont signées par ce même certificat : en changer demande une version de transition, qui déclare le nouveau.</p>
+
+    <div class="note">
+      <span class="note-ic" aria-hidden="true"><svg viewBox="0 0 24 24"><path class="ni-bulb" d="M12 2.8a6.2 6.2 0 0 0-3.7 11.2c.7.5 1.1 1.3 1.1 2.1v.4h5.2v-.4c0-.8.4-1.6 1.1-2.1A6.2 6.2 0 0 0 12 2.8Z"/><path class="ni-base" d="M9.6 19.2h4.8M10.6 21.6h2.8"/></svg></span>
+      <span class="note-kind">Suggestion</span>
+      <p>Avec Claude Code, la skill publique drakbase fait tout ce parcours avec vous : elle écrit le code d'intégration et lance les contrôles, et vous laisse les mots de passe et l'accord pour publier. Suggestion : l'installer avec <code>claude plugin marketplace add DrakBase/skill</code> puis <code>claude plugin install drakbase@drakbase</code>, et demander dans le dossier de l'app « Branche les mises à jour DrakBase dans cette app ».</p>
+    </div>
+  </section>
+
+  <!-- 1.3 ---------------------------------------------------------------- -->
+  <section class="section" id="s-connexion">
+    <div class="section-head">
+      <span class="section-num">1.3</span>
+      <h3>Se connecter au serveur</h3>
+    </div>
+    <p>L'outil parle au serveur avec une clé d'accès personnelle (<span class="gloss">jeton&nbsp;d'API<button class="gloss-i" type="button" aria-expanded="false" aria-controls="g-jeton" aria-label="Définition de : jeton d'API">i</button><span class="gloss-pop" id="g-jeton" role="tooltip" hidden>Une clé d'accès créée dans l'administration, qui permet à l'outil d'agir en votre nom sans votre mot de passe. Elle a ses propres droits et une date d'expiration, et commence par amk_.</span></span>). Il la range dans le trousseau du Mac, jamais dans un fichier. À refaire sur chaque Mac, et quand le jeton expire : au bout de 365 jours par défaut.</p>
+    <ol class="steps">
+      <li class="step">
+        <span class="step-num">1</span>
+        <div class="step-body">
+          <h4>Créer le jeton dans l'administration</h4>
+          <p>Sur <code>updates.drakbase.com/admin/account</code>, rubrique « Jetons d'API », bouton « Nouveau jeton ». Cocher les droits du tableau ci-dessous. Le secret n'est montré qu'une fois : le copier tout de suite.</p>
+        </div>
+      </li>
+      <li class="step">
+        <span class="step-num">2</span>
+        <div class="step-body">
+          <h4>Donner le jeton à l'outil (drakbase login)</h4>
+          <pre class="cmd">drakbase login --server https&#58;//updates.drakbase.com</pre>
+          <p>La commande demande le jeton. Pour le coller depuis le presse-papiers : <code>pbpaste | drakbase login --server https&#58;//updates.drakbase.com --token-stdin</code>.</p>
+        </div>
+      </li>
+      <li class="step">
+        <span class="step-num">3</span>
+        <div class="step-body">
+          <h4>Vérifier la connexion (drakbase doctor)</h4>
+          <p>La commande affiche le compte connecté et les droits du jeton, sans rien modifier.</p>
+        </div>
+      </li>
+    </ol>
+    <div class="card scroll-x">
+      <table>
+        <thead><tr><th>Droit à cocher</th><th>Ce qu'il permet</th></tr></thead>
+        <tbody>
+          <tr><td>Envoyer des versions (<code>releases:write</code>)</td><td>créer une version, y déposer ses fichiers, la modifier tant qu'elle reste un brouillon</td></tr>
+          <tr><td>Publier (<code>releases:publish</code>)</td><td>rendre une version visible des apps, la retirer, la passer de bêta à stable</td></tr>
+          <tr><td>Modifier la fiche (<code>listing:write</code>)</td><td>changer la description et les captures d'écran de la page publique de l'app</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>Un jeton peut être limité à une seule app. Pour brancher une app qui n'existe pas encore sur le serveur, il ne doit pas l'être. Dans tous les cas, il ne donne jamais plus de droits que le compte qui l'a créé.</p>
+    <p>Pour changer de serveur ou de compte, <code>drakbase logout</code> retire l'adresse et le jeton du trousseau, puis <code>drakbase login</code> enregistre les nouveaux. Le jeton retiré reste valable sur le serveur : le révoquer dans l'administration s'il ne doit plus servir.</p>
+  </section>
+
+  <!-- 1.4 ---------------------------------------------------------------- -->
+  <section class="section" id="s-brancher">
+    <div class="section-head">
+      <span class="section-num">1.4</span>
+      <h3>Brancher l'app</h3>
+      <button class="notes-toggle" type="button" data-notes-scope aria-pressed="false">Masquer les notes</button>
+    </div>
+    <p>Une seule commande ajoute une app à DrakBase. Elle se lance dans votre propre terminal, à la racine du projet, parce qu'elle demande des mots de passe.</p>
+    <ol class="steps">
+      <li class="step">
+        <span class="step-num">1</span>
+        <div class="step-body">
+          <h4>Choisir l'identifiant de l'app (<span class="gloss">slug<button class="gloss-i" type="button" aria-expanded="false" aria-controls="g-slug" aria-label="Définition de : slug">i</button><span class="gloss-pop" id="g-slug" role="tooltip" hidden>L'identifiant court et définitif d'une app sur le serveur, en minuscules, par exemple kiosque. Il apparaît dans les adresses du serveur.</span></span>)</h4>
+          <p>De 1 à 64 caractères parmi les minuscules, les chiffres et le tiret, tiré du nom de l'app. Il ne change plus jamais.</p>
+        </div>
+      </li>
+      <li class="step">
+        <span class="step-num">2</span>
+        <div class="step-body">
+          <h4>Lancer la commande qui branche l'app (drakbase init)</h4>
+          <pre class="cmd">drakbase init &lt;slug&gt;</pre>
+          <p>Pour une app Tauri destinée au Mac, ajouter <code>--sign-id "&lt;nom du certificat&gt;"</code>. L'outil enchaîne quatre tâches :</p>
+          <ul>
+            <li>créer les deux clés de signature de l'app, la principale et celle de secours, si elle n'en a pas encore ;</li>
+            <li>en ranger une copie dans KeePassXC, relire cette copie, puis mettre le mot de passe de la clé principale dans le trousseau ;</li>
+            <li>écrire la configuration des mises à jour dans le projet, sans toucher au code ni remplacer une clé déjà présente ;</li>
+            <li>ouvrir dans le navigateur une page de l'administration, déjà remplie, qui crée l'app sur le serveur.</li>
+          </ul>
+          <p>Elle demande le mot de passe de la base KeePassXC, et le chemin de la base la première fois.</p>
+          <p>Pour une app Swift, il faut un vrai fichier Info.plist. Un projet Xcode récent n'en a souvent pas, car Xcode le génère : créer alors un petit <code>Info.plist</code> (un dictionnaire vide suffit), le renseigner dans le réglage « Info.plist File » (<code>INFOPLIST_FILE</code>) de la cible, puis relancer <code>drakbase init</code>. Xcode le fusionne avec les clés qu'il génère. Si le projet en a plusieurs, préciser lequel avec <code>--plist &lt;fichier&gt;</code>.</p>
+        </div>
+      </li>
+      <li class="step">
+        <span class="step-num">3</span>
+        <div class="step-body">
+          <h4>Faire valider l'app par un superadmin</h4>
+          <p>Cette page est réservée aux <span class="gloss">superadmins<button class="gloss-i" type="button" aria-expanded="false" aria-controls="g-superadmin" aria-label="Définition de : superadmin">i</button><span class="gloss-pop" id="g-superadmin" role="tooltip" hidden>Le rôle qui peut tout faire dans l'administration, dont créer des apps. Un éditeur, lui, ne gère que les apps qui lui sont confiées.</span></span>. Un éditeur leur envoie l'adresse affichée par le terminal, qui se termine par <code>/admin/add-app#…</code>. Le superadmin vérifie que la page montre le même identifiant de clé que le terminal, puis valide. L'outil attend 15 minutes au plus ; relancer <code>drakbase init</code> reprend là où il s'était arrêté.</p>
+          <p class="see-more">Le superadmin vérifie l'identifiant de clé, puis valide : le même clic crée l'app, active sa clé et vous ajoute à ses éditeurs.</p>
+        </div>
+      </li>
+      <li class="step">
+        <span class="step-num">4</span>
+        <div class="step-body">
+          <h4>Écrire le code restant</h4>
+          <p>Le terminal finit par une liste « Reste à faire » : ce qu'il faut encore écrire dans l'app pour qu'elle cherche et installe ses mises à jour.</p>
+          <p class="see-more"><a href="#s-code">Écrire le code de mise à jour</a> : ce qu'il reste à écrire dans une app Swift ou Tauri.</p>
+        </div>
+      </li>
+      <li class="step">
+        <span class="step-num">5</span>
+        <div class="step-body">
+          <h4>Contrôler jusqu'à ce que tout passe (drakbase doctor)</h4>
+          <p>La commande refait tous les contrôles sans rien modifier : ✓ bon, ! avertissement, ✗ problème. Pour une app Swift déjà construite, ajouter <code>--bundle &lt;chemin&gt;/Nom.app</code> : elle vérifie aussi sa signature.</p>
+        </div>
+      </li>
+      <li class="step">
+        <span class="step-num">6</span>
+        <div class="step-body">
+          <h4>Installer la première version à la main</h4>
+          <p>Depuis la page publique ou l'app construite, dans le dossier Applications. Les mises à jour automatiques partent de cette version-là : une version d'avant l'intégration ne sait pas se mettre à jour.</p>
+          <p>Lancée depuis le DMG ou le dossier Téléchargements, l'app tourne depuis une copie en lecture seule : elle ne peut pas se remplacer, et se dit indisponible. Sans <span class="gloss">notarisation<button class="gloss-i" type="button" aria-expanded="false" aria-controls="g-notarisation" aria-label="Définition de : notarisation">i</button><span class="gloss-pop" id="g-notarisation" role="tooltip" hidden>La vérification d'une app par Apple. Sans elle, macOS bloque le premier lancement d'une app téléchargée, jusqu'à ce que l'utilisateur l'autorise.</span></span>, macOS bloque son premier lancement : Réglages Système › Confidentialité et sécurité › « Ouvrir quand même ». La page publique l'explique aussi.</p>
+        </div>
+      </li>
+    </ol>
+    <div class="note is-caution">
+      <span class="note-ic" aria-hidden="true"><svg viewBox="0 0 24 24"><path class="ni-warn" d="M12 3.6L21.4 20H2.6Z"/><path class="ni-warn" d="M12 9.6v4.6"/><circle class="ni-dot" cx="12" cy="17.1" r="1.15"/></svg></span>
+      <span class="note-kind">Mise en garde</span>
+      <p>Une clé de signature perdue coupe l'app de toute mise à jour : les utilisateurs d'une app Tauri devraient la réinstaller à la main depuis la page publique. La copie que l'outil range dans KeePassXC ne protège que si la base KeePassXC a elle aussi une copie hors du Mac. Suggestion : pour des clés créées avant que l'outil ne les sauvegarde lui-même, lancer <code>drakbase backup &lt;slug&gt;</code>, qui les range et vérifie la copie.</p>
+    </div>
+    <div class="note">
+      <span class="note-ic" aria-hidden="true"><svg viewBox="0 0 24 24"><path class="ni-bulb" d="M12 2.8a6.2 6.2 0 0 0-3.7 11.2c.7.5 1.1 1.3 1.1 2.1v.4h5.2v-.4c0-.8.4-1.6 1.1-2.1A6.2 6.2 0 0 0 12 2.8Z"/><path class="ni-base" d="M9.6 19.2h4.8M10.6 21.6h2.8"/></svg></span>
+      <span class="note-kind">Suggestion</span>
+      <p>Une app Swift embarque aussi la clé de secours. Si seule sa clé principale est perdue, <code>drakbase restore &lt;slug&gt; --backup-key</code> réinstalle la clé de secours depuis KeePassXC. Suggestion : signer avec elle une version de transition (<code>--key ~/.appsmarket/keys/&lt;slug&gt;.backup.key</code>), préparée avec un superadmin, puis la retirer du Mac.</p>
+    </div>
+  </section>
+
+  <!-- 1.5 ---------------------------------------------------------------- -->
+  <section class="section" id="s-code">
+    <div class="section-head">
+      <span class="section-num">1.5</span>
+      <h3>Écrire le code de mise à jour</h3>
+      <button class="notes-toggle" type="button" data-notes-scope aria-pressed="false">Masquer les notes</button>
+    </div>
+    <p class="section-note">Ce que l'outil a déjà écrit dans le projet, et ce qu'il reste à écrire, selon le type d'app.</p>
+    <div class="topo">
+      <div class="topo-box">
+        <div class="topo-box-head"><span class="topo-ic" aria-hidden="true"><svg viewBox="0 0 32 32"><rect class="ti-l" x="3" y="5" width="26" height="22" rx="3.5"/><path class="ti-l" d="M3 10.5H29"/><circle class="ti-f" cx="6.9" cy="7.8" r="1"/><circle class="ti-f" cx="10.1" cy="7.8" r="1"/><circle class="ti-f" cx="13.3" cy="7.8" r="1"/><path class="ti-y" d="M10.5 16L16 13.3L21.5 16V22.2L16 24.9L10.5 22.2Z"/><path class="ti-l" d="M10.5 16L16 18.7L21.5 16M16 18.7V24.9" style="stroke-width:1.6"/></svg></span><h4>Une app Swift</h4><span class="topo-kind">paquet DrakBase</span></div>
+        <div class="tb-group is-done">
+          <p class="tb-title"><span class="tb-badge" aria-hidden="true"></span>Déjà écrit par drakbase init, dans l'Info.plist</p>
+          <ul class="tb-list">
+            <li>adresse du serveur <code>DrakBaseFeedURL</code></li>
+            <li>clés publiques <code>DrakBasePublicKeys</code></li>
+          </ul>
+        </div>
+        <div class="tb-group is-todo">
+          <p class="tb-title"><span class="tb-badge" aria-hidden="true">4</span>Reste à écrire</p>
+          <ul class="tb-list">
+            <li>la dépendance au paquet, produit <code>DrakBase</code>, depuis <code>https&#58;//github.com/DrakBase/client.git</code> à partir de la 0.6.0 ;</li>
+            <li>une attente au tout début du programme, avant tout le reste, pour que la nouvelle version laisse l'ancienne se fermer (<code>RelaunchGate.waitForPreviousInstance()</code>) ;</li>
+            <li>l'objet qui cherche et installe les mises à jour, avec sa fenêtre (<code>Updater</code> et <code>UpdatePrompt</code>) ;</li>
+            <li>le menu « Rechercher les mises à jour… » et la section des réglages (<code>UpdatesCommands</code>, <code>UpdateSettingsSection</code>).</li>
+          </ul>
+        </div>
+        <div class="tb-group is-cond">
+          <p class="tb-title">Conditions</p>
+          <p>macOS 14 ou plus. L'app ne doit pas être isolée par le système (<span class="gloss">sandbox<button class="gloss-i" type="button" aria-expanded="false" aria-controls="g-sandbox" aria-label="Définition de : sandbox">i</button><span class="gloss-pop" id="g-sandbox" role="tooltip" hidden>Le bac à sable de macOS : une app qui l'active ne peut toucher qu'à ses propres fichiers, ce qui l'empêche de remplacer son propre programme.</span></span>), et doit être signée avec votre certificat, jamais en <span class="gloss">ad&nbsp;hoc<button class="gloss-i" type="button" aria-expanded="false" aria-controls="g-adhoc" aria-label="Définition de : ad hoc">i</button><span class="gloss-pop" id="g-adhoc" role="tooltip" hidden>Une signature de code faite sans certificat. Elle ne dit pas qui a signé, donc l'app ne peut pas vérifier que la version suivante vient du même auteur.</span></span>.</p>
+        </div>
+      </div>
+      <div class="topo-box">
+        <div class="topo-box-head"><span class="topo-ic" aria-hidden="true"><svg viewBox="0 0 32 32"><rect class="ti-l" x="3" y="5" width="26" height="22" rx="3.5"/><path class="ti-l" d="M3 10.5H29"/><circle class="ti-f" cx="6.9" cy="7.8" r="1"/><circle class="ti-f" cx="10.1" cy="7.8" r="1"/><circle class="ti-f" cx="13.3" cy="7.8" r="1"/><path class="ti-l" d="M13.6 13.4V16.2M18.4 13.4V16.2M16 22.4V25" style="stroke-width:1.8"/><rect class="ti-y" x="11.6" y="16.2" width="8.8" height="6.2" rx="2"/></svg></span><h4>Une app Tauri 2</h4><span class="topo-kind">plugin officiel + @drakbase/tauri</span></div>
+        <div class="tb-group is-done">
+          <p class="tb-title"><span class="tb-badge" aria-hidden="true"></span>Déjà écrit par drakbase init</p>
+          <ul class="tb-list">
+            <li>configuration des mises à jour <code>tauri.conf.json</code></li>
+            <li>permissions de la fenêtre <code>capabilities/default.json</code></li>
+            <li>plugins Rust <code>Cargo.toml</code></li>
+            <li>paquets JavaScript <code>package.json</code></li>
+          </ul>
+        </div>
+        <div class="tb-group is-todo">
+          <p class="tb-title"><span class="tb-badge" aria-hidden="true">3</span>Reste à écrire</p>
+          <ul class="tb-list">
+            <li>lancer <code>npm install</code>, qui télécharge l'aide <code>@drakbase/tauri</code> depuis le dépôt public ;</li>
+            <li>déclarer les quatre plugins (mise à jour, relance, réglages, version du système) dans le code Rust de démarrage, <code>src-tauri/src/lib.rs</code> ;</li>
+            <li>l'interface : le crochet React <code>useUpdater()</code> de <code>@drakbase/tauri/react</code>, qui cherche au lancement puis une fois par jour, ou les fonctions <code>checkForUpdate</code> et <code>installUpdate</code>.</li>
+          </ul>
+        </div>
+        <div class="tb-group is-cond">
+          <p class="tb-title">Conditions</p>
+          <p>Garder les versions exactes des plugins posées par l'outil, les mêmes côté Rust et côté JavaScript. Un fichier de plateforme (<code>tauri.macos.conf.json</code>…) qui masque un de ces réglages est signalé par l'outil : c'est là qu'il se corrige. Sous Windows, l'installeur s'installe pour l'utilisateur seul, sans demander de droits d'administrateur.</p>
+        </div>
+      </div>
+    </div>
+
+    <h4>Le code d'une app Swift, pas à pas</h4>
+    <ol class="steps">
+      <li class="step">
+        <span class="step-num">1</span>
+        <div class="step-body">
+          <h4>Ajouter le paquet</h4>
+          <p>Dans Xcode : File › Add Package Dependencies…, adresse <code>https&#58;//github.com/DrakBase/client.git</code>, à partir de la version 0.6.0, produit <code>DrakBase</code>. Pour un paquet SwiftPM, dans <code>Package.swift</code> :</p>
+          <pre class="cmd">.package(url: "https&#58;//github.com/DrakBase/client.git", from: "0.6.0"),
+// puis, dans les dépendances de la cible de l'app :
+.product(name: "DrakBase", package: "client"),</pre>
+          <p>L'app n'importe qu'un module, <code>DrakBase</code>, sans aucune autre dépendance.</p>
+        </div>
+      </li>
+      <li class="step">
+        <span class="step-num">2</span>
+        <div class="step-body">
+          <h4>Attendre l'ancienne version au lancement</h4>
+          <p>La version relancée par une mise à jour doit attendre que l'ancienne soit fermée, avant toute autre chose : ouverture d'une base, <code>App.init</code>. Retirer <code>@main</code> de la structure <code>App</code>, et le mettre dans un nouveau fichier, par exemple <code>Main.swift</code> (jamais <code>main.swift</code>, qui ne peut pas porter <code>@main</code>) :</p>
+          <pre class="cmd">import DrakBase
+
+@main
+@MainActor
+enum Main {
+    static func main() {
+        RelaunchGate.waitForPreviousInstance()
+        MonApp.main()
+    }
+}</pre>
+          <p>Pour une app AppKit sans SwiftUI : appeler <code>RelaunchGate.waitForPreviousInstance()</code> en tête de <code>main.swift</code>, avant <code>NSApplicationMain</code>.</p>
+        </div>
+      </li>
+      <li class="step">
+        <span class="step-num">3</span>
+        <div class="step-body">
+          <h4>Créer l'updater, son menu et ses réglages</h4>
+          <p>Un seul updater par app, créé après cette attente. <code>UpdatePrompt</code> est la fenêtre de mise à jour (notes, progression, « Installer et relancer », « Plus tard »), <code>UpdatesCommands</code> ajoute « Rechercher les mises à jour… » après « À propos », et <code>UpdateSettingsSection</code> regroupe tous les réglages, canal bêta compris :</p>
+          <pre class="cmd">import DrakBase
+import SwiftUI
+
+struct MonApp: App {
+    @State private var updater: Updater = {
+        let updater = Updater()
+        updater.presenter = UpdatePrompt(updater: updater)
+        updater.start()
+        return updater
+    }()
+
+    var body: some Scene {
+        WindowGroup { ContentView() }
+            .commands { UpdatesCommands(updater: updater) }
+        Settings {
+            Form { UpdateSettingsSection(updater: updater) }.formStyle(.grouped)
+        }
+    }
+}</pre>
+          <p>Pour une mise en page à soi, chaque réglage existe aussi séparément : <code>UpdateChannelPicker</code>, <code>CheckForUpdatesButton</code>, <code>AutomaticUpdateChecksToggle</code>… L'updater se passe aux vues plus profondes par <code>.environment(updater)</code>.</p>
+        </div>
+      </li>
+    </ol>
+
+    <h4>Le code d'une app Tauri, pas à pas</h4>
+    <ol class="steps">
+      <li class="step">
+        <span class="step-num">1</span>
+        <div class="step-body">
+          <h4>Installer les paquets</h4>
+          <pre class="cmd">npm install</pre>
+          <p>La commande télécharge l'aide <code>@drakbase/tauri</code> depuis le dépôt public, par HTTPS, avec les plugins ajoutés par <code>drakbase init</code>.</p>
+        </div>
+      </li>
+      <li class="step">
+        <span class="step-num">2</span>
+        <div class="step-body">
+          <h4>Déclarer les plugins côté Rust</h4>
+          <p>Dans <code>src-tauri/src/lib.rs</code> (ou <code>main.rs</code>), dans le <code>Builder</code> :</p>
+          <pre class="cmd">tauri::Builder::default()
+    .plugin(tauri_plugin_updater::Builder::new().build())
+    .plugin(tauri_plugin_process::init())
+    .plugin(tauri_plugin_store::Builder::new().build())
+    .plugin(tauri_plugin_os::init())</pre>
+          <p>Si l'app utilise <code>tauri-plugin-single-instance</code>, il se déclare en premier.</p>
+        </div>
+      </li>
+      <li class="step">
+        <span class="step-num">3</span>
+        <div class="step-body">
+          <h4>Brancher l'interface</h4>
+          <p>Avec React, le crochet <code>useUpdater</code> cherche les mises à jour et donne leur état :</p>
+          <pre class="cmd">import { useUpdater } from "@drakbase/tauri/react";
+
+function Updates() {
+  const updater = useUpdater(); // cherche au lancement, puis une fois par jour
+  const { phase, update, progress, error } = updater;
+
+  return (
+    &lt;section&gt;
+      {update &amp;&amp; (phase === "available" || phase === "error") &amp;&amp; (
+        &lt;button onClick={() =&gt; void updater.install()}&gt;
+          Installer la version {update.version} et relancer
+        &lt;/button&gt;
+      )}
+      {phase === "downloading" &amp;&amp; progress &amp;&amp; (
+        &lt;progress max={progress.total ?? undefined} value={progress.downloaded} /&gt;
+      )}
+      {phase === "error" &amp;&amp; &lt;p&gt;{error}&lt;/p&gt;}
+      &lt;button onClick={() =&gt; void updater.check()}&gt;Rechercher les mises à jour&lt;/button&gt;
+    &lt;/section&gt;
+  );
+}</pre>
+          <p>Le crochet donne aussi les notes de version (<code>update.notes</code>, en Markdown), le canal (<code>settings.channel</code>, <code>updater.setChannel</code>) et le choix des statistiques. Sans React : <code>checkForUpdate()</code>, puis <code>installUpdate(update)</code>, et <code>describeUpdateError(error)</code> pour un message d'erreur en français. L'aide suppose <code>"moduleResolution": "bundler"</code>, comme Vite et les modèles de Tauri.</p>
+        </div>
+      </li>
+    </ol>
+
+    <h4>Les cas particuliers</h4>
+    <div class="mechs">
+      <div class="mech">
+        <h4>Un travail en cours à enregistrer</h4>
+        <p class="mech-tag">updaterShouldRelaunch · beforeInstall</p>
+        <p>Juste avant la relance, l'app peut enregistrer son travail, ou refuser de se relancer à ce moment. En Swift, par un <code>UpdaterDelegate</code> assigné à <code>updater.delegate</code> et gardé par l'app, car l'updater n'en garde qu'une référence faible. En Tauri, par l'option <code>beforeInstall</code>, appelée une fois l'archive vérifiée ; sous Windows, l'installeur ferme l'app aussitôt après.</p>
+      </div>
+      <div class="mech">
+        <h4>Une app de barre des menus</h4>
+        <p class="mech-tag">CheckForUpdatesMenuItem · RESTART_EXIT_CODE</p>
+        <p>En Swift, mettre <code>CheckForUpdatesMenuItem(updater:)</code> dans le menu du <code>MenuBarExtra</code> ; la fenêtre de mise à jour fonctionne aussi. En Tauri, une app qui empêche sa fermeture (<code>api.prevent_exit()</code>) doit laisser passer la relance, quand le code de sortie vaut <code>tauri::RESTART_EXIT_CODE</code>.</p>
+      </div>
+      <div class="mech">
+        <h4>Les statistiques anonymes</h4>
+        <p class="mech-tag">allowsAnonymousStatistics: false</p>
+        <p>Actives par défaut : l'app envoie un identifiant d'installation anonyme, que l'utilisateur peut couper dans les réglages. Le dire dans l'app, à côté du réglage. En Swift, <code>Updater(allowsAnonymousStatistics: false)</code> pour n'en envoyer jamais ; en Tauri, <code>setShareStatistics(false)</code> les coupe et efface l'identifiant.</p>
+      </div>
+    </div>
+
+    <p>Les guides complets arrivent avec les bibliothèques, à la version installée. Pour Swift, <code>clients/swift/DrakBase/README.md</code>, dans la copie que garde SwiftPM : <code>.build/checkouts/client/</code> pour un paquet, <code>SourcePackages/checkouts/client/</code> dans les DerivedData d'un projet Xcode. Pour Tauri, <code>node_modules/@drakbase/tauri/clients/tauri/README.md</code>. Ils se lisent aussi dans le dépôt public, sur GitHub : <code>github.com/DrakBase/client</code>.</p>
+    <div class="note is-caution">
+      <span class="note-ic" aria-hidden="true"><svg viewBox="0 0 24 24"><path class="ni-warn" d="M12 3.6L21.4 20H2.6Z"/><path class="ni-warn" d="M12 9.6v4.6"/><circle class="ni-dot" cx="12" cy="17.1" r="1.15"/></svg></span>
+      <span class="note-kind">Mise en garde</span>
+      <p>Une app Tauri branchée avant la 0.5 reste sur l'ancienne aide : en 0.x, la plage <code>^0.4.0</code> ne reçoit jamais la 0.5, et <code>npm update</code> n'y change rien. Sans l'aide 0.5.1 ou plus et le plugin de version du système, un Mac resté sur un ancien macOS reçoit une version qu'il ne peut pas lancer. Suggestion : relancer <code>drakbase init &lt;slug&gt;</code>, qui monte la plage à la version de l'outil (<code>^0.6.0</code>) et ajoute le plugin, puis <code>npm install</code>, et déclarer le plugin côté Rust ; <code>drakbase doctor</code> le signale tant que ce n'est pas fait.</p>
+    </div>
+    <div class="note is-caution">
+      <span class="note-ic" aria-hidden="true"><svg viewBox="0 0 24 24"><path class="ni-warn" d="M12 3.6L21.4 20H2.6Z"/><path class="ni-warn" d="M12 9.6v4.6"/><circle class="ni-dot" cx="12" cy="17.1" r="1.15"/></svg></span>
+      <span class="note-kind">Mise en garde</span>
+      <p>Une app branchée avant la 0.6 prend le paquet ou l'aide dans un dépôt privé, par SSH : <code>kcampion/drakbase-apps-market</code>, ou <code>DrakBase/apps-market</code>. Ses mises à jour n'en dépendent pas, car le dépôt ne sert qu'à construire l'app ; mais la construire demande encore un accès à ce dépôt privé. Suggestion : la passer au dépôt public, ce que <code>drakbase doctor</code> signale à partir de la 0.6. Pour une app Swift, l'adresse et le nom du paquet changent ensemble, car SwiftPM tire ce nom de l'adresse : <code>.package(url: "https&#58;//github.com/DrakBase/client.git", …)</code> et <code>package: "client"</code> ; dans Xcode, retirer le paquet puis le rajouter. Pour une app Tauri, <code>drakbase init &lt;slug&gt;</code> passe l'aide au dépôt public, puis <code>npm install</code>.</p>
+    </div>
+  </section>
+
+  <!-- 1.6 ---------------------------------------------------------------- -->
+  <section class="section" id="s-publier">
+    <div class="section-head">
+      <span class="section-num">1.6</span>
+      <h3>Publier une version</h3>
+      <button class="notes-toggle" type="button" data-notes-scope aria-pressed="false">Masquer les notes</button>
+    </div>
+    <p>Publier se fait en deux temps. L'outil envoie d'abord un brouillon, que le serveur ne propose à aucune app. La publication le rend visible, depuis l'administration ou en relançant la même commande avec <code>--publish</code>. Aucun mot de passe à taper : celui de la clé vient du trousseau.</p>
+
+    <h4>Une app Swift</h4>
+    <p>Monter d'abord le numéro de version (<code>MARKETING_VERSION</code> dans Xcode), puis construire en Release, pour les deux types de processeurs Mac à la fois, et signer le bundle complet avec votre certificat, en dernier :</p>
+    <pre class="cmd">xcodebuild -scheme MonApp -configuration Release -derivedDataPath build ARCHS="arm64 x86_64" ONLY_ACTIVE_ARCH=NO
+ditto build/Build/Products/Release/MonApp.app dist/MonApp.app
+codesign --force --sign "&lt;nom du certificat&gt;" --timestamp=none dist/MonApp.app
+drakbase doctor monapp --bundle dist/MonApp.app</pre>
+    <p>Un paquet SwiftPM se construit avec <code>swift build -c release --arch arm64 --arch x86_64</code>, puis un script assemble le <code>.app</code>. <code>codesign -dv dist/MonApp.app</code> doit montrer <code>Authority=&lt;nom du certificat&gt;</code>, jamais <code>Signature=adhoc</code>. Ensuite, l'envoi :</p>
+    <pre class="cmd">drakbase release dist/MonApp.app --app monapp --channel stable --notes notes.md
+drakbase release dist/MonApp.app --app monapp --channel stable --notes notes.md --publish</pre>
+    <p>La première ligne fabrique l'archive de mise à jour et l'image disque d'installation (DMG), les signe avec la clé de l'app et les envoie en brouillon. La seconde publie ce même brouillon sans rien renvoyer. Le numéro de version est lu dans l'app elle-même (<code>CFBundleShortVersionString</code>).</p>
+
+    <h4>Une app Tauri</h4>
+    <pre class="cmd">drakbase exec monapp -- npx tauri build --target universal-apple-darwin
+drakbase publish --app monapp --version 1.2.0 --channel stable --notes notes.md &lt;fichiers…&gt;</pre>
+    <p>La première ligne construit l'app avec la clé de signature, que l'outil prête à Tauri le temps de la commande. La seconde envoie les fichiers produits dans <code>src-tauri/target/…/bundle/</code>, chacun avec sa signature <code>.sig</code> à côté, sauf le DMG :</p>
+    <ul>
+      <li>pour macOS, l'archive <code>.app.tar.gz</code> et le <code>.dmg</code> ;</li>
+      <li>pour Linux, l'<span class="gloss">AppImage<button class="gloss-i" type="button" aria-expanded="false" aria-controls="g-appimage" aria-label="Définition de : AppImage">i</button><span class="gloss-pop" id="g-appimage" role="tooltip" hidden>Un format d'app Linux : un seul fichier, lancé sans installation. C'est la seule forme qu'une app Tauri sait remplacer elle-même sous Linux.</span></span> ;</li>
+      <li>pour Windows, l'installeur <code>-setup.exe</code>.</li>
+    </ul>
+    <p>L'outil ne tourne que sur Mac : les fichiers construits sous Linux ou Windows y reviennent pour être publiés.</p>
+    <p>Le numéro de version vient de <code>tauri.conf.json</code>, sous sa forme exacte (<code>1.2.0</code>, <code>1.3.0-beta.1</code>) : c'est le même qu'il faut donner à <code>--version</code>, car la signature de l'archive porte la version construite, et l'app refuse un écart. Dans <code>bundle.targets</code>, une même liste convient aux trois systèmes : <code>["app", "dmg", "nsis", "appimage"]</code>. Éviter MSI, qui s'installe pour toute la machine et demande l'accord d'un administrateur à chaque mise à jour.</p>
+    <div class="note is-caution">
+      <span class="note-ic" aria-hidden="true"><svg viewBox="0 0 24 24"><path class="ni-warn" d="M12 3.6L21.4 20H2.6Z"/><path class="ni-warn" d="M12 9.6v4.6"/><circle class="ni-dot" cx="12" cy="17.1" r="1.15"/></svg></span>
+      <span class="note-kind">Mise en garde</span>
+      <p>Le parcours Windows d'une app Tauri (installation, mise à jour, relance) n'a pas encore été essayé sur un vrai PC. Suggestion : le vérifier sur une machine Windows avant d'y annoncer l'app.</p>
+    </div>
+
+    <h4>Essayer la première mise à jour</h4>
+    <p>Avant d'annoncer l'app, vérifier qu'une mise à jour arrive vraiment, sur le canal bêta pour ne toucher personne d'autre.</p>
+    <ol class="steps">
+      <li class="step">
+        <span class="step-num">1</span>
+        <div class="step-body">
+          <h4>Installer une version de départ</h4>
+          <p>Une version équipée, par exemple 1.0.0, installée dans le dossier Applications et lancée une fois.</p>
+        </div>
+      </li>
+      <li class="step">
+        <span class="step-num">2</span>
+        <div class="step-body">
+          <h4>Publier une version plus haute en bêta</h4>
+          <p>Monter le numéro à <code>1.0.1-beta.1</code>, construire, puis envoyer avec <code>--channel beta</code> et <code>--publish</code>. Les apps réglées sur stable ne la voient pas.</p>
+        </div>
+      </li>
+      <li class="step">
+        <span class="step-num">3</span>
+        <div class="step-body">
+          <h4>Passer l'app installée en bêta</h4>
+          <p>Dans ses réglages : la section des mises à jour en Swift, le choix du canal de votre interface en Tauri.</p>
+        </div>
+      </li>
+      <li class="step">
+        <span class="step-num">4</span>
+        <div class="step-body">
+          <h4>Rechercher, installer, vérifier</h4>
+          <p>« Rechercher les mises à jour… » propose la 1.0.1-beta.1 avec ses notes. « Installer et relancer » ferme l'app, la remplace et la relance ; « À propos » montre le nouveau numéro. Ensuite, passer cette version en stable dans l'administration, ou la retirer.</p>
+        </div>
+      </li>
+    </ol>
+
+    <h4>Ce qui encadre une version</h4>
+    <div class="mechs">
+      <div class="mech">
+        <h4>Les versions ne font que monter</h4>
+        <p class="mech-tag">1.2.0, puis 1.2.1 ou 1.3.0-beta.1</p>
+        <p>Les numéros suivent la convention <span class="gloss">SemVer<button class="gloss-i" type="button" aria-expanded="false" aria-controls="g-semver" aria-label="Définition de : SemVer">i</button><span class="gloss-pop" id="g-semver" role="tooltip" hidden>La numérotation majeure.mineure.correctif, par exemple 1.2.0. Un suffixe comme -beta.1 marque une pré-version, plus basse que la version finale du même numéro.</span></span>. Chaque version doit être plus haute que la dernière de son canal : une pré-version face à la dernière bêta, une autre face à la dernière stable. Une version déjà envoyée ne se renvoie pas, et un défaut se corrige par une version plus haute.</p>
+      </div>
+      <div class="mech">
+        <h4>Le canal bêta</h4>
+        <p class="mech-tag">--channel beta</p>
+        <p>Seules les apps réglées sur bêta reçoivent une pré-version ; elles voient aussi les versions stables, donc toujours la plus haute. Passer une bêta en stable se fait dans l'administration, sans rien reconstruire.</p>
+      </div>
+      <div class="mech">
+        <h4>Le retrait d'une version</h4>
+        <p class="mech-tag">administration, page de la version</p>
+        <p>Une version retirée n'est plus proposée, et ses téléchargements répondent « disparu » (code 410). Les apps qui l'ont déjà installée la gardent.</p>
+      </div>
+      <div class="mech">
+        <h4>La reprise d'un envoi</h4>
+        <p class="mech-tag">relancer la même commande</p>
+        <p>Une publication interrompue reprend où elle en était : le brouillon est retrouvé, et les fichiers identiques (même contenu, même signature) ne repartent pas. Un brouillon repris garde ses notes, sauf si <code>--notes</code> est redonné.</p>
+      </div>
+      <div class="mech">
+        <h4>Les notes de version</h4>
+        <p class="mech-tag">--notes notes.md</p>
+        <p>En Markdown, dans la langue des utilisateurs, sur ce qui change pour eux. Elles s'affichent dans la fenêtre de mise à jour de l'app et sur sa page publique.</p>
+      </div>
+      <div class="mech">
+        <h4>Signer ou vérifier un fichier à part</h4>
+        <p class="mech-tag">drakbase sign · drakbase verify</p>
+        <p>Un fichier construit ailleurs se signe avec <code>drakbase sign</code>, puis s'envoie avec <code>drakbase publish</code>. Pour contrôler une signature sans rien envoyer, <code>drakbase verify</code> détaille chaque contrôle.</p>
+      </div>
+    </div>
+
+    <div class="note is-caution">
+      <span class="note-ic" aria-hidden="true"><svg viewBox="0 0 24 24"><path class="ni-warn" d="M12 3.6L21.4 20H2.6Z"/><path class="ni-warn" d="M12 9.6v4.6"/><circle class="ni-dot" cx="12" cy="17.1" r="1.15"/></svg></span>
+      <span class="note-kind">Mise en garde</span>
+      <p>Une app macOS signée en ad hoc (<code>codesign --sign -</code>) ne reçoit jamais de mise à jour, et <code>drakbase release</code> refuse de l'envoyer. Suggestion : signer le bundle complet en dernier, toujours avec le même certificat : <code>codesign --force --sign "&lt;nom du certificat&gt;" --timestamp=none dist/MonApp.app</code>.</p>
+    </div>
+  </section>
+
+  <!-- 1.7 ---------------------------------------------------------------- -->
+  <section class="section" id="s-fiche">
+    <div class="section-head">
+      <span class="section-num">1.7</span>
+      <h3>Remplir la fiche publique</h3>
+    </div>
+    <p>À la première publication, la page publique de l'app est vide : elle attend une description et des captures d'écran. Le jeton doit porter le droit « Modifier la fiche ».</p>
+    <ol class="steps">
+      <li class="step">
+        <span class="step-num">1</span>
+        <div class="step-body">
+          <h4>Écrire la description</h4>
+          <p>Du texte brut, 4 000 caractères au plus, en quelques paragraphes courts, dans la langue des utilisateurs : ce que fait l'app, pour qui, ses points forts.</p>
+        </div>
+      </li>
+      <li class="step">
+        <span class="step-num">2</span>
+        <div class="step-body">
+          <h4>Prendre les captures d'écran</h4>
+          <p>3 à 6 images PNG, de 320 à 8 192 pixels de côté et 8 Mio au plus chacune, avec une légende de 200 caractères au plus. Des données de démonstration, jamais de vraies données personnelles.</p>
+        </div>
+      </li>
+      <li class="step">
+        <span class="step-num">3</span>
+        <div class="step-body">
+          <h4>Essayer, puis envoyer (drakbase listing)</h4>
+          <pre class="cmd">drakbase listing monapp --description fiche/description.txt \
+  --screenshot "fiche/1-principale.png=La fenêtre principale" \
+  --screenshot "fiche/2-reglages.png=Les réglages" --dry-run</pre>
+          <p>Avec <code>--dry-run</code>, rien ne part. Sans lui, la description est remplacée, et les captures du serveur deviennent exactement cette liste, dans cet ordre.</p>
+        </div>
+      </li>
+      <li class="step">
+        <span class="step-num">4</span>
+        <div class="step-body">
+          <h4>Déposer l'icône et rendre l'app visible</h4>
+          <p>Dans l'administration seulement, onglet « Informations » de l'app : une image PNG carrée de 512 Kio au plus, et la case « Visible sur la page publique ».</p>
+        </div>
+      </li>
+    </ol>
+  </section>
+
+  <!-- 1.8 ---------------------------------------------------------------- -->
+  <section class="section" id="s-stack">
+    <div class="section-head">
+      <span class="section-num">1.8</span>
+      <h3>Publier une stack Docker ou un exécutable Linux</h3>
+      <button class="notes-toggle" type="button" data-notes-scope aria-pressed="false">Masquer les notes</button>
+    </div>
+    <p>Une <span class="gloss">stack<button class="gloss-i" type="button" aria-expanded="false" aria-controls="g-stack" aria-label="Définition de : stack">i</button><span class="gloss-pop" id="g-stack" role="tooltip" hidden>Ici, un groupe de conteneurs Docker qui forment ensemble une seule app, décrits par un fichier compose.yaml et mis à jour ensemble.</span></span> se destine à une machine Linux : un Raspberry Pi, un petit serveur. DrakBase sert ses images comme un registre Docker en lecture seule. Sur la machine, un petit programme, l'agent drakbase-stack, l'installe puis la met à jour en ne téléchargeant que ce qui a changé.</p>
+    <ol class="steps">
+      <li class="step">
+        <span class="step-num">1</span>
+        <div class="step-body">
+          <h4>Préparer le dossier de la stack (stack/)</h4>
+          <p>À la racine du projet, trois éléments :</p>
+          <ul>
+            <li>le fichier <code>compose.yaml</code>, dont les services à publier se construisent sur place ;</li>
+            <li>un fichier <code>.env.example</code> avec les réglages que la machine pourra changer, comme le port ;</li>
+            <li>un dossier <code>files/</code> pour les fichiers montés en lecture seule.</li>
+          </ul>
+          <p>Les données vivent dans des volumes nommés, car le dossier de la stack change à chaque version. Laisser Compose nommer volumes et réseaux : un nom fixe, ou une clé avec <code>_</code> (<code>db_data</code>), devient une permission à faire accepter par la machine ; écrire <code>dbdata</code> ou <code>db-data</code>. Dans <code>.env.example</code>, une ligne <code>NOM=valeur</code> par réglage, et aucun nom qui commence par <code>COMPOSE_</code> ou <code>DOCKER_</code>.</p>
+        </div>
+      </li>
+      <li class="step">
+        <span class="step-num">2</span>
+        <div class="step-body">
+          <h4>Brancher la stack (drakbase init)</h4>
+          <p>Comme pour une app : clés, puis page d'ajout dans l'administration. L'outil crée aussi <code>stack/stack.json</code>, qui dit quel service surveiller, si l'agent peut revenir seul à la version précédente après un échec, et pour quels processeurs construire (arm64 et amd64 par défaut).</p>
+        </div>
+      </li>
+      <li class="step">
+        <span class="step-num">3</span>
+        <div class="step-body">
+          <h4>Contrôler la stack (drakbase doctor)</h4>
+          <p>Avec le slug : <code>drakbase doctor &lt;slug&gt;</code>. Il lit le compose comme le fera la publication, puis comme l'agent le fera sur la machine : seuls les champs d'une liste sont admis, et tout autre est refusé avec son chemin (la liste est dans <code>docs/PROTOCOLE.md</code>, section « Compose »). Il affiche aussi ce que la stack demandera à la machine : ports, dossiers de l'hôte, réseau, socket Docker.</p>
+        </div>
+      </li>
+      <li class="step">
+        <span class="step-num">4</span>
+        <div class="step-body">
+          <h4>Publier la stack (drakbase release --stack)</h4>
+          <pre class="cmd">drakbase release --app monapp --stack --version 1.0.0 --channel stable --notes notes.md</pre>
+          <p>L'outil construit les images, recompresse leurs couches, envoie un brouillon, puis affiche la commande d'installation.</p>
+        </div>
+      </li>
+      <li class="step">
+        <span class="step-num">5</span>
+        <div class="step-body">
+          <h4>Installer sur la machine</h4>
+          <pre class="cmd">curl -fsSL https&#58;//updates.drakbase.com/install/drakbase-stack.sh | sudo sh
+sudo drakbase-stack install monapp --key &lt;clé publique principale&gt;
+sudo drakbase-stack auto on</pre>
+          <p>La première ligne installe l'agent, la deuxième la stack (elle montre ses permissions et les fait accepter), la troisième active la vérification quotidienne. La machine doit avoir Docker Engine 24 et Docker Compose 2.29 au moins. Rien ne s'installe sans validation : dans l'app si elle le propose, sinon par <code>sudo drakbase-stack update monapp</code>. L'agent se lance toujours en root, avec <code>sudo</code>. Une version qui demande une permission nouvelle s'arrête jusqu'à <code>sudo drakbase-stack update monapp --accept</code>.</p>
+        </div>
+      </li>
+    </ol>
+    <p>Un exécutable Linux (une app cli) se publie de la même façon. <code>drakbase init &lt;slug&gt; --cli</code> écrit le fichier <code>drakbase.json</code>, dont le programme lit les clés publiques à la compilation. Chaque version se signe ensuite avec <code>drakbase sign</code> et s'envoie avec <code>drakbase publish</code>. L'agent drakbase-stack est lui-même publié ainsi.</p>
+    <div class="note is-caution">
+      <span class="note-ic" aria-hidden="true"><svg viewBox="0 0 24 24"><path class="ni-warn" d="M12 3.6L21.4 20H2.6Z"/><path class="ni-warn" d="M12 9.6v4.6"/><circle class="ni-dot" cx="12" cy="17.1" r="1.15"/></svg></span>
+      <span class="note-kind">Mise en garde</span>
+      <p>La commande d'installation contient la clé publique de l'app : c'est elle qui permet à la machine de refuser une fausse version. Suggestion : la transmettre telle que <code>drakbase release</code> l'affiche, par un canal de confiance, sans la retoucher.</p>
+    </div>
+  </section>
+
+  <!-- 1.9 ---------------------------------------------------------------- -->
+  <section class="section" id="s-depannage">
+    <div class="section-head">
+      <span class="section-num">1.9</span>
+      <h3>Quand quelque chose ne va pas</h3>
+    </div>
+    <p>Une seule commande fait le point sans rien modifier, à lancer à la racine du projet (<code>drakbase doctor</code>). Sous chaque problème, elle donne presque toujours la correction. Les cas les plus fréquents :</p>
+    <div class="card scroll-x">
+      <table>
+        <thead><tr><th>Ce que dit l'outil</th><th>Ce qu'il faut faire</th></tr></thead>
+        <tbody>
+          <tr><td>Le branchement reste sur « En attente de l'administration… » alors que la page dit l'app prête</td><td>Le compte du jeton n'est pas éditeur de l'app, donc il ne la voit pas : un superadmin l'ajoute dans l'onglet « Éditeurs » de l'app.</td></tr>
+          <tr><td>Le jeton est refusé : expiré, révoqué ou sans le bon droit</td><td>Créer un nouveau jeton dans « Mon compte », puis relancer <code>drakbase login</code>.</td></tr>
+          <tr><td>Le mot de passe de la clé principale manque dans le trousseau</td><td>Lancer <code>drakbase backup &lt;slug&gt;</code>, qui le vérifie puis l'y range.</td></tr>
+          <tr><td>L'app est « signée ad hoc » ou « n'est pas signée »</td><td>La signer avec le certificat, puis relancer l'envoi.</td></tr>
+          <tr><td>La version est déjà publiée, ou l'envoi répond « conflict »</td><td>Monter le numéro de version : une version publiée ne change plus.</td></tr>
+          <tr><td>La version est déjà publiée en bêta</td><td>La passer en stable dans l'administration, sans rien renvoyer.</td></tr>
+          <tr><td>La page publique ne montre pas l'app</td><td>Cocher « Visible sur la page publique » (onglet « Informations »), et publier une version stable.</td></tr>
+          <tr><td>L'outil est connecté au mauvais serveur, ou avec le jeton d'un autre compte</td><td><code>drakbase logout</code>, puis <code>drakbase login</code>.</td></tr>
+          <tr><td>« @drakbase/tauri plus ancien que l'outil : la plage ^0.4.0… »</td><td>Relancer <code>drakbase init &lt;slug&gt;</code>, puis <code>npm install</code>, et déclarer côté Rust le plugin ajouté.</td></tr>
+          <tr><td>La version du projet est une pré-version plus basse que la dernière stable</td><td>Personne ne la recevrait : prendre une pré-version de la version suivante.</td></tr>
+          <tr><td>Un champ du compose « n'est pas pris en charge dans une stack »</td><td>Le retirer de <code>compose.yaml</code> ; la liste des champs admis est dans <code>docs/PROTOCOLE.md</code>, section « Compose ».</td></tr>
+          <tr><td>Sur la machine : « lecture de …/state.json : accès refusé »</td><td>Relancer la commande de l'agent avec <code>sudo</code>.</td></tr>
+          <tr><td>Sur la machine : une permission nouvelle arrête la mise à jour</td><td>Lire la liste, puis lancer <code>sudo drakbase-stack update &lt;slug&gt; --accept</code> si on l'accepte.</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>La liste complète des messages est dans la skill Claude, fichier <code>skills/drakbase/references/depannage.md</code> du dépôt public DrakBase/skill.</p>
+  </section>
+</section>
+
+<footer class="foot">Sources : le dépôt public DrakBase/client (README, clients/swift/DrakBase/README.md, clients/tauri/README.md, docs/PROTOCOLE.md, docs/API.md) et la skill DrakBase/skill, à la version 0.6.0, relus le 24 novembre 2026.</footer>
+
+</div>
+
+<script>
+document.documentElement.lang = 'fr';
+
+/* Manual theme override. No inline handler (CSP-safe), no localStorage (the
+   artifact sandbox may refuse it) — the override lasts the reading session. */
+(function () {
+  var root = document.documentElement;
+  var btn = document.getElementById('theme-toggle');
+  if (!btn) return;
+  btn.addEventListener('click', function () {
+    var isDark = root.getAttribute('data-theme') === 'dark' ||
+      (!root.hasAttribute('data-theme') &&
+        window.matchMedia('(prefers-color-scheme: dark)').matches);
+    root.setAttribute('data-theme', isDark ? 'light' : 'dark');
+    btn.setAttribute('aria-pressed', String(!isDark));
+  });
+})();
+
+/* Suggestions et mises en garde : un interrupteur par section, un pour tout le
+   document. L'état vit dans `data-notes` — le CSS fait le reste. */
+(function () {
+  var LABEL = { on: 'Masquer les notes', off: 'Afficher les notes' };
+  var ALL = { on: 'Masquer les suggestions et mises en garde',
+              off: 'Afficher les suggestions et mises en garde' };
+
+  function apply(el, off, btn, labels) {
+    el.setAttribute('data-notes', off ? 'off' : 'on');
+    if (!btn) return;
+    btn.setAttribute('aria-pressed', String(off));
+    btn.textContent = off ? labels.off : labels.on;
+  }
+
+  Array.prototype.forEach.call(document.querySelectorAll('[data-notes-scope]'), function (btn) {
+    var section = btn.closest('.section');
+    if (!section) return;
+    btn.addEventListener('click', function () {
+      apply(section, section.getAttribute('data-notes') !== 'off', btn, LABEL);
+    });
+  });
+
+  var all = document.getElementById('notes-all');
+  if (all) {
+    all.addEventListener('click', function () {
+      var off = document.documentElement.getAttribute('data-notes') !== 'off';
+      apply(document.documentElement, off, all, ALL);
+      /* Les sections suivent le global : sinon une section masquée à la main
+         resterait masquée quand on rallume tout, et le bouton mentirait. */
+      Array.prototype.forEach.call(document.querySelectorAll('.section'), function (s) {
+        var btn = s.querySelector('[data-notes-scope]');
+        apply(s, off, btn, LABEL);
+      });
+    });
+  }
+})();
+
+/* Glossaire : le clic ouvre une définition et ferme les autres. Le survol et le
+   focus sont gérés en CSS, donc ceci n'ajoute que le geste tactile. */
+(function () {
+  var buttons = Array.prototype.slice.call(document.querySelectorAll('.gloss-i'));
+  function closeAll(except) {
+    buttons.forEach(function (b) {
+      if (b === except) return;
+      b.setAttribute('aria-expanded', 'false');
+      var pop = document.getElementById(b.getAttribute('aria-controls'));
+      if (pop) pop.hidden = true;
+    });
+  }
+  buttons.forEach(function (btn) {
+    btn.addEventListener('click', function (e) {
+      e.stopPropagation();
+      var pop = document.getElementById(btn.getAttribute('aria-controls'));
+      if (!pop) return;
+      var open = pop.hidden;
+      closeAll(btn);
+      pop.hidden = !open;
+      btn.setAttribute('aria-expanded', String(open));
+    });
+  });
+  document.addEventListener('click', function () { closeAll(null); });
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') closeAll(null);
+  });
+})();
+
+/* Tableaux larges : bouton injecté pour chaque tableau, plutôt qu'écrit dans
+   chacun — un tableau ajouté plus tard l'obtient tout seul. */
+(function () {
+  var L = { off: 'Élargir le tableau', on: 'Réduire le tableau' };
+  /* Chaque case reçoit le nom de sa colonne, que la mise en page sur
+     téléphone affiche au-dessus de la valeur. */
+  Array.prototype.forEach.call(document.querySelectorAll('table'), function (table) {
+    var heads = Array.prototype.map.call(table.querySelectorAll('thead th'), function (th) {
+      return th.textContent.trim();
+    });
+    Array.prototype.forEach.call(table.querySelectorAll('tbody tr'), function (tr) {
+      Array.prototype.forEach.call(tr.children, function (td, i) {
+        if (heads[i]) td.setAttribute('data-label', heads[i]);
+      });
+    });
+  });
+  Array.prototype.forEach.call(document.querySelectorAll('.card'), function (card) {
+    if (!card.querySelector('table')) return;
+    var barre = document.createElement('div');
+    barre.className = 'table-tools';
+    var btn = document.createElement('button');
+    btn.className = 'table-expand';
+    btn.type = 'button';
+    btn.setAttribute('aria-pressed', 'false');
+    btn.innerHTML = '<span class="glyph" aria-hidden="true">⤡</span>';
+    btn.appendChild(document.createTextNode(L.off));
+    btn.addEventListener('click', function () {
+      var large = card.classList.toggle('is-wide');
+      btn.setAttribute('aria-pressed', String(large));
+      btn.lastChild.nodeValue = large ? L.on : L.off;
+    });
+    barre.appendChild(btn);
+    card.insertBefore(barre, card.firstChild);
+  });
+})();
+
+/* Les commandes d'en-tête flottent dès que l'en-tête quitte l'écran.
+   IntersectionObserver plutôt qu'un écouteur de scroll : aucun calcul par pixel. */
+(function () {
+  var tools = document.getElementById('head-tools');
+  var head = document.querySelector('.masthead');
+  if (!tools || !head || !window.IntersectionObserver) return;
+  new IntersectionObserver(function (entries) {
+    tools.classList.toggle('is-afloat', !entries[0].isIntersecting);
+  }, { threshold: 0 }).observe(head);
+})();
+
+/* Volets. Sans JS, le document se lit en entier : c'est ce script qui masque,
+   jamais le HTML. */
+var select = (function () {
+  var tabs = Array.prototype.slice.call(document.querySelectorAll('.tab'));
+  if (!tabs.length) return function () {};
+
+  function barreAncree() {
+    var s = document.querySelector('.tabs-sentinel');
+    return !!s && s.getBoundingClientRect().top < 0;
+  }
+
+  function revealPanelTop(panel) {
+    var bar = document.querySelector('.topbar') || document.querySelector('.tabs');
+    if (!bar || !panel) return;
+    if (!barreAncree()) return;
+    panel.style.scrollMarginTop = (bar.offsetHeight + 8) + 'px';
+    var doux = !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    panel.scrollIntoView({ block: 'start', behavior: doux ? 'smooth' : 'auto' });
+  }
+
+  function choose(tab) {
+    tabs.forEach(function (t) {
+      var panel = document.getElementById(t.getAttribute('aria-controls'));
+      var on = t === tab;
+      t.setAttribute('aria-selected', String(on));
+      t.setAttribute('tabindex', on ? '0' : '-1');
+      if (panel) panel.hidden = !on;
+    });
+  }
+
+  tabs.forEach(function (tab, i) {
+    tab.addEventListener('click', function () {
+      choose(tab);
+      revealPanelTop(document.getElementById(tab.getAttribute('aria-controls')));
+    });
+    tab.addEventListener('keydown', function (e) {
+      var next = e.key === 'ArrowRight' ? i + 1 : e.key === 'ArrowLeft' ? i - 1 : -1;
+      if (next < 0 || next >= tabs.length) return;
+      e.preventDefault();
+      tabs[next].focus();
+      choose(tabs[next]);
+      revealPanelTop(document.getElementById(tabs[next].getAttribute('aria-controls')));
+    });
+  });
+
+  /* Compte des notes par onglet, calculé ici et jamais écrit à la main. */
+  tabs.forEach(function (tab) {
+    var panel = document.getElementById(tab.getAttribute('aria-controls'));
+    if (!panel) return;
+    var n = panel.querySelectorAll('.note').length;
+    if (!n) return;
+    var badge = document.createElement('span');
+    badge.className = 'tab-notes';
+    badge.textContent = String(n);
+    badge.title = n > 1
+      ? n + ' suggestions ou mises en garde dans ce volet'
+      : '1 suggestion ou mise en garde dans ce volet';
+    tab.appendChild(badge);
+  });
+
+  choose(tabs[0]);
+  return choose;
+})();
+
+/* Un lien interne vers une section masquée : ouvrir son volet, puis y aller. */
+document.addEventListener('click', function (e) {
+  var link = e.target.closest ? e.target.closest('a[href^="#"]') : null;
+  if (!link) return;
+  var target = document.getElementById(link.getAttribute('href').slice(1));
+  if (!target) return;
+  var volet = target.closest('.volet');
+  if (volet && volet.hidden) {
+    var tab = document.getElementById(volet.getAttribute('aria-labelledby'));
+    if (tab) select(tab);
+  }
+  var doux = !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  target.scrollIntoView({ block: 'start', behavior: doux ? 'smooth' : 'auto' });
+  e.preventDefault();
+});
+</script>
+</body>
+</html>
